@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Gradle Imported" enabled="true">
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$PROJECT_DIR$/../../../../../Public/wpilib/2026/maven/edu/wpi/first/epilogue/epilogue-processor-java/2026.1.1/epilogue-processor-java-2026.1.1.jar" />
+          <entry name="$PROJECT_DIR$/../../../../../Public/wpilib/2026/maven/edu/wpi/first/epilogue/epilogue-runtime-java/2026.1.1/epilogue-runtime-java-2026.1.1.jar" />
+        </processorPath>
+        <module name="ocebot-code-2026.ocebot-code-2026.main~1" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="ocebot-code-2026.ocebot-code-2026.main" target="17" />
+      <module name="ocebot-code-2026.ocebot-code-2026.test" target="17" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="ocebot-code-2026.ocebot-code-2026" options="-XDstringConcat=inline" />
+      <module name="ocebot-code-2026.ocebot-code-2026.main" options="-XDstringConcat=inline" />
+      <module name="ocebot-code-2026.ocebot-code-2026.main~1" options="-XDstringConcat=inline" />
+      <module name="ocebot-code-2026.ocebot-code-2026.test" options="-XDstringConcat=inline" />
+      <module name="ocebot-code-2026.ocebot-code-2026.test~1" options="-XDstringConcat=inline" />
+    </option>
+  </component>
+</project>
