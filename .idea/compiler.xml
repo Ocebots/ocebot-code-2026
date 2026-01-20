@@ -10,6 +10,14 @@
         </processorPath>
         <module name="ocebot-code-2026.main" />
       </profile>
+      <profile name="Gradle Imported" enabled="true">
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$PROJECT_DIR$/../wpilib/2026/maven/edu/wpi/first/epilogue/epilogue-processor-java/2026.1.1/epilogue-processor-java-2026.1.1.jar" />
+          <entry name="$PROJECT_DIR$/../wpilib/2026/maven/edu/wpi/first/epilogue/epilogue-runtime-java/2026.1.1/epilogue-runtime-java-2026.1.1.jar" />
+        </processorPath>
+        <module name="1022322.ocebot-code-2026.main" />
+      </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="ocebot-code-2026.ocebot-code-2026.main" target="17" />
@@ -18,6 +26,7 @@
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="1022322.ocebot-code-2026.main" options="-XDstringConcat=inline" />
       <module name="ocebot-code-2026" options="-XDstringConcat=inline" />
       <module name="ocebot-code-2026.main" options="-XDstringConcat=inline" />
       <module name="ocebot-code-2026.ocebot-code-2026" options="-XDstringConcat=inline" />
