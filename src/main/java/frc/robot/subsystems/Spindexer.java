@@ -3,37 +3,43 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.config.CANMappings;
 import frc.robot.config.SpindexerConfig;
 
 public class Spindexer extends SubsystemBase {
-  protected TalonFX spindexerMotor;
+  protected TalonFX spindexer;
 
   public Spindexer() {
-    spindexerMotor = new TalonFX(CANMappings.SPINDEXER_MOTOR_ID);
-    TalonFXConfiguration spindexerMotorConfig = new TalonFXConfiguration();
+    spindexer = new TalonFX(CANMappings.SPINDEXER_MOTOR_ID);
+    TalonFXConfiguration spindexerConfig = new TalonFXConfiguration();
 
-    spindexerMotorConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
-    spindexerMotorConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+    spindexerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+    spindexerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
 
-    spindexerMotorConfig.CurrentLimits.SupplyCurrentLimit =
+    spindexerConfig.CurrentLimits.SupplyCurrentLimit =
         SpindexerConfig.SPINDEXER_SUPPLY_CURRENT_LIMIT;
-    spindexerMotorConfig.CurrentLimits.StatorCurrentLimit =
+    spindexerConfig.CurrentLimits.StatorCurrentLimit =
         SpindexerConfig.SPINDEXER_STATOR_CURRENT_LIMIT;
 
-    spindexerMotorConfig.Feedback.SensorToMechanismRatio = SpindexerConfig.SPINDEXER_GEAR_RATIO;
-    spindexerMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    spindexerConfig.Feedback.SensorToMechanismRatio = SpindexerConfig.SPINDEXER_GEAR_RATIO;
+    spindexerConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    spindexerConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
-    spindexerMotor.getConfigurator().apply(spindexerMotorConfig);
+    spindexer.getConfigurator().apply(spindexerConfig);
   }
 
-  public void index(double velocity) {
-    spindexerMotor.setControl(new DutyCycleOut(velocity));
+  public void rotate(double speed) {
+    spindexer.setControl(new DutyCycleOut(speed));
+  }
+
+  public void index() {
+    this.rotate(SpindexerConfig.SPINDEXER_INDEXING_SPEED);
   }
 
   public void stop() {
-    spindexerMotor.stopMotor();
+    spindexer.stopMotor();
   }
 }
