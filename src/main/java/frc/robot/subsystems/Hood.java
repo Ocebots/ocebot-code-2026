@@ -6,11 +6,11 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.config.CANMappings;
 import frc.robot.config.HoodConfig;
-
+@Logged
 public class Hood extends SubsystemBase {
   protected TalonFX hood;
   private double hoodScoreRotation;
@@ -38,10 +38,6 @@ public class Hood extends SubsystemBase {
     hoodConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
     hood.getConfigurator().apply(hoodConfig);
-  }
-
-  public double calculate(Pose2d robotPose) {
-    return hoodScoreRotation;
   }
 
   public void rotate(double rotation) {

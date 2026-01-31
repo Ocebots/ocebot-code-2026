@@ -6,7 +6,6 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.config.CANMappings;
 import frc.robot.config.TurretConfig;
@@ -38,10 +37,6 @@ public class Turret extends SubsystemBase {
     turretConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
     turret.getConfigurator().apply(turretConfig);
-  }
-
-  public double calculate(Pose2d robotPose) {
-    return turretScoreRotation;
   }
 
   public void rotate(double rotation) {

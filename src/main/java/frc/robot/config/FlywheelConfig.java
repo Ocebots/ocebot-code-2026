@@ -10,6 +10,9 @@ public class FlywheelConfig {
   public static final double FLYWHEEL_P = 0;
   public static final double FLYWHEEL_I = 0;
   public static final double FLYWHEEL_D = 0;
+  public static final double FLYWHEEL_S = 0;
+  public static final double FLYWHEEL_V = 0;
+  public static final double FLYWHEEL_A = 0;
 
   public static final double FLYWHEEL_TOLERANCE = 0.005;
 }
