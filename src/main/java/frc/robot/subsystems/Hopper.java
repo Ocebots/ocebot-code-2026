@@ -63,12 +63,4 @@ public class Hopper extends SubsystemBase {
     return (Math.abs(hopper.getClosedLoopError().getValueAsDouble())
         <= HopperConfig.HOPPER_TOLERANCE);
   }
-
-  public void extend() {
-    this.move(HopperConfig.HOPPER_EXTEND_ROTATION);
-  }
-
-  public void retract() {
-    this.move(HopperConfig.HOPPER_RETRACT_ROTATION);
-  }
 }

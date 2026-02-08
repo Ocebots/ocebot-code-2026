@@ -14,5 +14,6 @@ public class FlywheelConfig {
   public static final double FLYWHEEL_V = 0;
   public static final double FLYWHEEL_A = 0;
 
+  public static final double FLYWHEEL_OUTTAKE_SPEED = 0;
   public static final double FLYWHEEL_TOLERANCE = 0.005;
 }

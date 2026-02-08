@@ -8,10 +8,7 @@ import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.config.TunerConstants;
-import frc.robot.subsystems.CommandSwerveDrivetrain;
-import frc.robot.subsystems.Flywheel;
-import frc.robot.subsystems.Hood;
-import frc.robot.subsystems.Turret;
+import frc.robot.subsystems.*;
 
 @Logged
 public class RobotContainer {
@@ -19,14 +16,17 @@ public class RobotContainer {
   private Hood hood = new Hood();
   private Flywheel flywheel = new Flywheel();
   private CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+  private Hopper hopper = new Hopper();
+  private Climb climb = new Climb();
+  private Intake intake = new Intake();
+  private Spindexer spindexer = new Spindexer();
+  private Kicker kicker = new Kicker();
 
   public RobotContainer() {
     configureBindings();
   }
 
-  private void configureBindings() {
-
-  }
+  private void configureBindings() {}
 
   public Command getAutonomousCommand() {
     return Commands.print("No autonomous command configured");

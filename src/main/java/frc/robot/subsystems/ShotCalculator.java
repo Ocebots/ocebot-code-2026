@@ -10,7 +10,8 @@ import edu.wpi.first.wpilibj.DriverStation;
 import java.util.Optional;
 
 public class ShotCalculator {
-  public static double calculateTurret(Translation2d robotPosition, Translation2d robotVelocity) {
+  public static double calculateTurretSOTM(
+      Translation2d robotPosition, Translation2d robotVelocity) {
     // 1. Project future position
     Translation2d futurePos = robotPosition.plus(robotVelocity.times(latencyCompensation));
     // 2. Get target vector
@@ -30,7 +31,27 @@ public class ShotCalculator {
     return turretAngle;
   }
 
-  public static double calculateFlywheel(Translation2d robotPosition, Translation2d robotVelocity) {
+  public static double calculateTurretStillShot(
+      Translation2d robotPosition, Translation2d robotVelocity) {
+    return 5.0;
+  }
+
+  public static double calculateTurretPass(
+      Translation2d robotPosition, Translation2d robotVelocity) {
+    return 5.0;
+  }
+
+  public static double calculateHoodPass(Translation2d robotPosition, Translation2d robotVelocity) {
+    return 5.0;
+  }
+
+  public static double calculateFlywheelPass(
+      Translation2d robotPosition, Translation2d robotVelocity) {
+    return 5.0;
+  }
+
+  public static double calculateFlywheelShot(
+      Translation2d robotPosition, Translation2d robotVelocity) {
     // 1. Project future position
     Translation2d futurePos = robotPosition.plus(robotVelocity.times(latencyCompensation));
     // 2. Get target vector
@@ -53,7 +74,7 @@ public class ShotCalculator {
     return requiredRpm;
   }
 
-  public static double calculateHood(Translation2d robotPosition, Translation2d robotVelocity) {
+  public static double calculateHoodShot(Translation2d robotPosition, Translation2d robotVelocity) {
     // 1. Project future position
     Translation2d futurePos = robotPosition.plus(robotVelocity.times(latencyCompensation));
     // 2. Get target vector
