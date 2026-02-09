@@ -3,10 +3,12 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.config.CANMappings;
 import frc.robot.config.TurretConfig;
 
@@ -58,5 +60,45 @@ public class Turret extends SubsystemBase {
   public boolean atPosition() {
     return (Math.abs(turret.getClosedLoopError().getValueAsDouble())
         <= TurretConfig.TURRET_TOLERANCE);
+  }
+
+  final PositionVoltage m_request = new PositionVoltage(0);
+
+  boolean flipping = false;
+
+  public void moveToApriltag() {
+    if (LimelightHelpers.getTV("limelight") && !flipping) {
+      double currentPosition = turret.getPosition().getValueAsDouble();
+      double tx = -LimelightHelpers.getTX("limelight");
+      double errorInRotations = (tx / 360.0) * TurretConfig.TURRET_GEAR_RATIO;
+      double targetPositon = currentPosition + errorInRotations;
+      turret.setControl(m_request.withPosition(targetPositon));
+    }
+  }
+
+  public void flip() {
+    if (turret.getPosition().getValueAsDouble() >= 2) {
+      flipping = true;
+      stop();
+      turret.setControl(m_request.withPosition(-1.9));
+      new WaitCommand(2);
+      flipping = false;
+    }
+    if (turret.getPosition().getValueAsDouble() <= -2) {
+      flipping = true;
+      stop();
+      turret.setControl(m_request.withPosition(1.9));
+      new WaitCommand(2);
+      flipping = false;
+    }
+  }
+
+  public boolean shouldFlip() {
+    if (turret.getPosition().getValueAsDouble() >= 2
+        || turret.getPosition().getValueAsDouble() <= -2) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }
