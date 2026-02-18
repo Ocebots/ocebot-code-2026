@@ -35,31 +35,7 @@ public class RobotContainer {
     configureBindings();
   }
 
-  private void configureBindings() {
-    // Drive
-    drivetrain.setDefaultCommand(
-        new DrivetrainCommand(
-            drivetrain,
-            DrivetrainCommand.Position.TELEOP,
-            controller.getLeftX(),
-            controller.getLeftY(),
-            controller.getRightX()));
-
-    // Zero
-    controller.x().onTrue(Commands.runOnce(RobotContainer::zeroPigeon));
-
-    // Intake
-    controller.leftTrigger().whileTrue(new IntakeCommand(intake, IntakeCommand.Position.INTAKE));
-
-    // Shoot
-    controller.rightTrigger().whileTrue(new KickerCommand(kicker, KickerCommand.Position.INTAKE));
-    controller
-        .rightTrigger()
-        .whileTrue(new FlywheelCommand(flywheel, FlywheelCommand.Position.SHOOT_SIMPLE));
-
-    // Climb
-    controller.a().whileTrue(new ClimbCommand(climb, ClimbCommand.Position.CLIMB));
-  }
+  private void configureBindings() {}
 
   public Command getAutonomousCommand() {
     return Commands.print("No autonomous command configured");
