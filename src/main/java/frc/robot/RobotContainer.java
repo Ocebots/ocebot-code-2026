@@ -35,7 +35,24 @@ public class RobotContainer {
     configureBindings();
   }
 
-  private void configureBindings() {}
+  private void configureBindings() {
+    // Y = Shoot Toggle
+    controller.y().toggleOnTrue(new KickerCommand(kicker, KickerCommand.Position.OUTTAKE));
+    // X = intake toggle
+    controller.x().toggleOnTrue(new IntakeCommand(intake, IntakeCommand.Position.INTAKE));
+    // Right Stick Down = Extend/Retract Hopper
+    /*
+    controller.rightStick().onTrue(
+            new HopperCommand(hopper, HopperCommand.Position.EXTEND),
+            new HopperCommand(hopper, HopperCommand.Position.RETRACT),
+            () -> hopper.isExtended() // Fix this method later!!!
+    );
+    */
+    // Right Trigger = Climb Extend
+    controller.rightTrigger().toggleOnTrue(new ClimbCommand(climb, ClimbCommand.Position.CLIMB));
+    // Left Trigger = Climb Extend
+    controller.leftTrigger().toggleOnTrue(new ClimbCommand(climb, ClimbCommand.Position.UNCLIMB));
+  }
 
   public Command getAutonomousCommand() {
     return Commands.print("No autonomous command configured");

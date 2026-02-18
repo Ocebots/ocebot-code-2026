@@ -14,6 +14,7 @@ public class HopperCommand extends Command {
 
   private Hopper subsystem;
   private HopperCommand.Position pose;
+  private boolean isExtended = false;
 
   public HopperCommand(Hopper subsystem, HopperCommand.Position pose) {
     this.pose = pose;
