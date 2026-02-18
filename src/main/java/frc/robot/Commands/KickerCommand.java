@@ -1,9 +1,11 @@
 package frc.robot.Commands;
 
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.config.KickerConfig;
 import frc.robot.subsystems.Kicker;
 
+@Logged
 public class KickerCommand extends Command {
   public static enum Position {
     INTAKE,
@@ -25,10 +27,12 @@ public class KickerCommand extends Command {
     switch (pose) {
       case INTAKE:
         subsystem.intake(KickerConfig.KICKER_INTAKE_SPEED);
+        System.out.println("Kicker: Intaking");
         break;
 
       case OUTTAKE:
         subsystem.outtake(KickerConfig.KICKER_INTAKE_SPEED);
+        System.out.println("Kicker: Outtaking");
         break;
 
       default:

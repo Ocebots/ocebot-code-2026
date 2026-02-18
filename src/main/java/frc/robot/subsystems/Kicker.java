@@ -34,10 +34,6 @@ public class Kicker extends SubsystemBase {
     kicker.setControl(new DutyCycleOut(speed));
   }
 
-  public void intake() {
-    kicker.setControl(new DutyCycleOut(KickerConfig.KICKER_INTAKE_SPEED));
-  }
-
   public void outtake(double speed) {
     speed = Math.abs(speed);
     kicker.setControl(new DutyCycleOut(speed));

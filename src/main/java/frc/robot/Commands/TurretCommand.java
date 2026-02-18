@@ -1,12 +1,16 @@
 package frc.robot.Commands;
 
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.LimelightHelpers;
+import frc.robot.config.TurretConfig;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.ShotCalculator;
 import frc.robot.subsystems.Turret;
 
+@Logged
 public class TurretCommand extends Command {
   public static enum Position {
     STILL_SHOT,
@@ -31,13 +35,39 @@ public class TurretCommand extends Command {
   public void initialize() {
     switch (pose) {
       case STILL_SHOT:
-        (Commands.run(() -> subsystem.moveToApriltag(), subsystem)
-                .until(() -> subsystem.shouldFlip())
-                .andThen(
-                    Commands.runOnce(() -> subsystem.stop(), subsystem)
-                        .andThen(Commands.runOnce(() -> subsystem.flip(), subsystem))))
-            .andThen(Commands.waitSeconds(0.5))
-            .repeatedly();
+        if (LimelightHelpers.getTV("limelight")) {
+          (Commands.run(() -> subsystem.moveToApriltag(), subsystem)
+                  .until(() -> subsystem.shouldFlip())
+                  .andThen(
+                      Commands.runOnce(() -> subsystem.stop(), subsystem)
+                          .andThen(Commands.runOnce(() -> subsystem.flip(), subsystem))))
+              .andThen(Commands.waitSeconds(0.5))
+              .repeatedly();
+        } else {
+          (Commands.run(
+                      () ->
+                          subsystem.rotate(
+                              ShotCalculator.calculateGoalPosition()
+                                  .minus(
+                                      drivetrain
+                                          .getState()
+                                          .Pose
+                                          .getTranslation()
+                                          .plus(
+                                              (TurretConfig.ROBOT_TO_TURRET)
+                                                  .rotateBy(
+                                                      drivetrain.getState().Pose.getRotation())))
+                                  .getAngle()
+                                  .minus(drivetrain.getState().Pose.getRotation())
+                                  .getRotations()),
+                      subsystem)
+                  .until(() -> subsystem.shouldFlip())
+                  .andThen(
+                      Commands.runOnce(() -> subsystem.stop(), subsystem)
+                          .andThen(Commands.runOnce(() -> subsystem.flip(), subsystem))))
+              .andThen(Commands.waitSeconds(0.5))
+              .repeatedly();
+        }
         break;
 
       case PASS:
