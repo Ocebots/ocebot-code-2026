@@ -27,11 +27,7 @@ public class FlywheelConfig {
   public static final double FLYWHEEL_LEFT_V = 0;
   public static final double FLYWHEEL_LEFT_A = 0;
 
-  public static final double FLYWHEEL_RIGHT_OUTTAKE_SPEED = 0;
-  public static final double FLYWHEEL_RIGHT_SHOOT_SPEED = 1.0;
-
-  public static final double FLYWHEEL_LEFT_OUTTAKE_SPEED = 0;
-  public static final double FLYWHEEL_LEFT_SHOOT_SPEED = 1.0;
-
+  public static final double FLYWHEEL_OUTTAKE_SPEED = 0;
+  public static final double FLYWHEEL_SHOOT_SPEED = 1.0;
   public static final double FLYWHEEL_TOLERANCE = 0.005;
 }
