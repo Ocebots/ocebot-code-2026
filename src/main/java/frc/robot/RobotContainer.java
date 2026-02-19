@@ -41,13 +41,7 @@ public class RobotContainer {
     // X = intake toggle
     controller.x().toggleOnTrue(new IntakeCommand(intake, IntakeCommand.Position.INTAKE));
     // Right Stick Down = Extend/Retract Hopper
-    /*
-    controller.rightStick().onTrue(
-            new HopperCommand(hopper, HopperCommand.Position.EXTEND),
-            new HopperCommand(hopper, HopperCommand.Position.RETRACT),
-            () -> hopper.isExtended() // Fix this method later!!!
-    );
-    */
+    controller.rightStick().onTrue(new ToggleHopperCommand(hopper));
     // Right Trigger = Climb Extend
     controller.rightTrigger().toggleOnTrue(new ClimbCommand(climb, ClimbCommand.Position.CLIMB));
     // Left Trigger = Climb Extend
