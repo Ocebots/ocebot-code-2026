@@ -10,40 +10,68 @@ import frc.robot.config.CANMappings;
 import frc.robot.config.KickerConfig;
 
 public class Kicker extends SubsystemBase {
-  protected TalonFX kicker;
+  protected TalonFX kickerFront;
+  protected TalonFX kickerBack;
 
   public Kicker() {
-    kicker = new TalonFX(CANMappings.KICKER_MOTOR_ID);
-    TalonFXConfiguration kickerConfig = new TalonFXConfiguration();
+    kickerFront = new TalonFX(CANMappings.KICKER_FRONT_MOTOR_ID);
+    kickerBack = new TalonFX(CANMappings.KICKER_BACK_MOTOR_ID);
+    TalonFXConfiguration kickerFrontConfig = new TalonFXConfiguration();
+    TalonFXConfiguration kickerBackConfig = new TalonFXConfiguration();
 
-    kickerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
-    kickerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+    kickerFrontConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+    kickerFrontConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+    kickerBackConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+    kickerBackConfig.CurrentLimits.StatorCurrentLimitEnable = true;
 
-    kickerConfig.CurrentLimits.SupplyCurrentLimit = KickerConfig.KICKER_SUPPLY_CURRENT_LIMIT;
-    kickerConfig.CurrentLimits.StatorCurrentLimit = KickerConfig.KICKER_STATOR_CURRENT_LIMIT;
+    kickerFrontConfig.CurrentLimits.SupplyCurrentLimit =
+        KickerConfig.KICKER_FRONT_SUPPLY_CURRENT_LIMIT;
+    kickerFrontConfig.CurrentLimits.StatorCurrentLimit =
+        KickerConfig.KICKER_FRONT_STATOR_CURRENT_LIMIT;
+    kickerBackConfig.CurrentLimits.SupplyCurrentLimit =
+        KickerConfig.KICKER_BACK_SUPPLY_CURRENT_LIMIT;
+    kickerBackConfig.CurrentLimits.StatorCurrentLimit =
+        KickerConfig.KICKER_BACK_STATOR_CURRENT_LIMIT;
 
-    kickerConfig.Feedback.SensorToMechanismRatio = KickerConfig.KICKER_GEAR_RATIO;
-    kickerConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-    kickerConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+    kickerFrontConfig.Feedback.SensorToMechanismRatio = KickerConfig.KICKER_FRONT_GEAR_RATIO;
+    kickerFrontConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    kickerFrontConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+    kickerBackConfig.Feedback.SensorToMechanismRatio = KickerConfig.KICKER_BACK_GEAR_RATIO;
+    kickerBackConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    kickerBackConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
-    kicker.getConfigurator().apply(kickerConfig);
+    kickerFront.getConfigurator().apply(kickerFrontConfig);
+    kickerBack.getConfigurator().apply(kickerBackConfig);
   }
 
   public void intake(double speed) {
     speed = Math.abs(speed);
-    kicker.setControl(new DutyCycleOut(speed));
+    kickerFront.setControl(new DutyCycleOut(-speed));
+    kickerBack.setControl(new DutyCycleOut(speed));
+  }
+
+  public void intake(double frontSpeed, double backSpeed) {
+    frontSpeed = Math.abs(frontSpeed);
+    backSpeed = Math.abs(backSpeed);
+    kickerFront.setControl(new DutyCycleOut(-frontSpeed));
+    kickerBack.setControl(new DutyCycleOut(backSpeed));
   }
 
   public void outtake(double speed) {
     speed = Math.abs(speed);
-    kicker.setControl(new DutyCycleOut(speed));
+    kickerFront.setControl(new DutyCycleOut(speed));
+    kickerBack.setControl(new DutyCycleOut(-speed));
   }
 
-  public void outtake() {
-    kicker.setControl(new DutyCycleOut(KickerConfig.KICKER_OUTTAKE_SPEED));
+  public void outtake(double frontSpeed, double backSpeed) {
+    frontSpeed = Math.abs(frontSpeed);
+    backSpeed = Math.abs(backSpeed);
+    kickerFront.setControl(new DutyCycleOut(frontSpeed));
+    kickerBack.setControl(new DutyCycleOut(-backSpeed));
   }
 
   public void stop() {
-    kicker.stopMotor();
+    kickerFront.stopMotor();
+    kickerBack.stopMotor();
   }
 }

@@ -47,7 +47,13 @@ public class Hopper extends SubsystemBase {
     hopper.setControl(new MotionMagicVoltage(rotation));
   }
 
-  public void directionalMove(double speed) {
+  public void extendDirectional(double speed) {
+    speed = Math.abs(-speed);
+    hopper.setControl(new DutyCycleOut(speed));
+  }
+
+  public void retractDirectional(double speed) {
+    speed = Math.abs(speed);
     hopper.setControl(new DutyCycleOut(speed));
   }
 

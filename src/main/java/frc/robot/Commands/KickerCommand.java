@@ -25,13 +25,15 @@ public class KickerCommand extends Command {
   @Override
   public void initialize() {
     switch (pose) {
+      // Intakes balls to shooter
       case INTAKE:
         subsystem.intake(KickerConfig.KICKER_INTAKE_SPEED);
         System.out.println("Kicker: Intaking");
         break;
 
+      // Pushes balls out of shooter area to hopper area
       case OUTTAKE:
-        subsystem.outtake(KickerConfig.KICKER_INTAKE_SPEED);
+        subsystem.outtake(KickerConfig.KICKER_OUTTAKE_SPEED);
         System.out.println("Kicker: Outtaking");
         break;
 
