@@ -25,11 +25,13 @@ public class IntakeCommand extends Command {
   @Override
   public void initialize() {
     switch (pose) {
+      // Runs intake
       case INTAKE:
         subsystem.intake(IntakeConfig.INTAKE_INTAKE_SPEED);
         System.out.println("Intake: Intaking");
         break;
 
+      // Runs intake in outtaking direction
       case OUTTAKE:
         subsystem.outtake(IntakeConfig.INTAKE_OUTTAKE_SPEED);
         System.out.println("Intake: Outtaking");

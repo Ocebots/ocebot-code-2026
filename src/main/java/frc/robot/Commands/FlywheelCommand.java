@@ -1,7 +1,6 @@
 package frc.robot.Commands;
 
 import edu.wpi.first.epilogue.Logged;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.config.FlywheelConfig;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -11,9 +10,11 @@ import frc.robot.subsystems.ShotCalculator;
 @Logged
 public class FlywheelCommand extends Command {
   public static enum Position {
-    SHOOT_SIMPLE,
-    SHOOT_CALCULATED,
+    HUB_SHOT,
+    TOWER_SHOT,
+    CALCULATED_SHOT,
     PASS,
+    DEFAULT_SHOT,
     OUTTAKE
   }
 
@@ -21,7 +22,7 @@ public class FlywheelCommand extends Command {
   private FlywheelCommand.Position pose;
   private CommandSwerveDrivetrain drivetrain;
 
-  public FlywheelCommand(Flywheel subsystem, Position pose) {
+  public FlywheelCommand(Flywheel subsystem, Position pose, CommandSwerveDrivetrain drivetrain) {
     this.pose = pose;
     this.subsystem = subsystem;
     this.drivetrain = drivetrain;
@@ -30,37 +31,41 @@ public class FlywheelCommand extends Command {
   }
 
   @Override
-  public void initialize() {
+  public void execute() {
     switch (pose) {
-      case SHOOT_SIMPLE:
-        subsystem.shoot(FlywheelConfig.FLYWHEEL_SHOOT_SPEED);
-        System.out.println("Flywheel: Simple Shot");
+      // Spins flywheels at proper speed for shooting from hub
+      case HUB_SHOT:
+        subsystem.shoot(FlywheelConfig.FLYWHEEL_HUB_SHOT_SPEED);
+        System.out.println("Flywheel: Hub Shot");
         break;
 
-      case SHOOT_CALCULATED:
+      // Spins flywheels at proper speed for shooting from tower
+      case TOWER_SHOT:
+        subsystem.shoot(FlywheelConfig.FLYWHEEL_TOWER_SHOT_SPEED);
+        System.out.println("Flywheel: Tower Shot");
+        break;
+
+      // Spins flywheels at estimated speed given distance from hub
+      case CALCULATED_SHOT:
         subsystem.shoot(
-            ShotCalculator.calculateFlywheelShot(
-                drivetrain.getState().Pose.getTranslation(),
-                new Translation2d(
-                    drivetrain.getState().Speeds.vxMetersPerSecond,
-                    drivetrain.getState().Speeds.vyMetersPerSecond)));
+            ShotCalculator.calculateFlywheelShot(drivetrain.getState().Pose.getTranslation()));
         System.out.println("Flywheel: Calculated Shot");
         break;
 
-      case PASS:
+      // Determines if robot should be prepared to shoot (if during active period or 5 seconds
+      // before one), and runs at middle speed close to actual speeds as to not overheat motors but
+      // to minimize spin-up time
+      case DEFAULT_SHOT:
         subsystem.shoot(
-            ShotCalculator.calculateFlywheelPass(
-                drivetrain.getState().Pose.getTranslation(),
-                new Translation2d(
-                    drivetrain.getState().Speeds.vxMetersPerSecond,
-                    drivetrain.getState().Speeds.vyMetersPerSecond)));
-        System.out.println("Flywheel: Pass");
-
+            ShotCalculator.calculateFlywheelDefaultShot(
+                drivetrain.getState().Pose.getTranslation()));
+        System.out.println("Flywheel: Default Shot");
         break;
 
+      // Runs flywheels in outtake direction in case of jam
       case OUTTAKE:
         subsystem.outtake(FlywheelConfig.FLYWHEEL_OUTTAKE_SPEED);
-        System.out.println("Flywheel: Outtakef");
+        System.out.println("Flywheel: Outtake");
         break;
 
       default:
@@ -75,6 +80,6 @@ public class FlywheelCommand extends Command {
 
   @Override
   public boolean isFinished() {
-    return subsystem.atVelocity();
+    return false;
   }
 }

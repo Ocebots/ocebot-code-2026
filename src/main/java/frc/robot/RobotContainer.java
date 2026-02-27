@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.*;
-
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
 import edu.wpi.first.epilogue.Logged;
@@ -19,14 +17,11 @@ import frc.robot.subsystems.*;
 
 @Logged
 public class RobotContainer {
-  private Turret turret = new Turret();
-  private Hood hood = new Hood();
   private Flywheel flywheel = new Flywheel();
   private CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
   private Hopper hopper = new Hopper();
   private Climb climb = new Climb();
   private Intake intake = new Intake();
-  private Spindexer spindexer = new Spindexer();
   private Kicker kicker = new Kicker();
   private CommandXboxController controller = new CommandXboxController(0);
   private SwerveDriveState driveState = new SwerveDriveState();

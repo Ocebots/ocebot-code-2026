@@ -3,8 +3,9 @@ package frc.robot.config;
 public class HopperConfig {
   public static final double HOPPER_SUPPLY_CURRENT_LIMIT = 70;
   public static final double HOPPER_STATOR_CURRENT_LIMIT = 80;
-  public static final double HOPPER_GEAR_RATIO = 0;
+  public static final double HOPPER_GEAR_RATIO = 1;
 
+  // Set
   public static final double HOPPER_MAX_CRUISE_VELOCITY = 3000;
   public static final double HOPPER_TARGET_ACCELERATION = 500;
   public static final double HOPPER_P = 0;
@@ -13,6 +14,7 @@ public class HopperConfig {
 
   public static final double HOPPER_TOLERANCE = 0.005;
 
+  // Set
   public static final double HOPPER_EXTEND_ROTATION = 0.0;
   public static final double HOPPER_RETRACT_ROTATION = 0.0;
 }

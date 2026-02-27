@@ -8,8 +8,10 @@ import frc.robot.subsystems.Climb;
 @Logged
 public class ClimbCommand extends Command {
   public static enum Position {
-    CLIMB,
-    UNCLIMB
+    DIRECTIONAL_CLIMB,
+    DIRECTIONAL_UNCLIMB,
+    POSITIONAL_CLIMB,
+    POSITIONAL_UNCLIMB
   }
 
   private Climb subsystem;
@@ -25,14 +27,29 @@ public class ClimbCommand extends Command {
   @Override
   public void initialize() {
     switch (pose) {
-      case CLIMB:
-        subsystem.move(ClimbConfig.CLIMB_CLIMB_ROTATION);
-        System.out.println("Climb: Climbing");
+
+      // Pulls down on climber (moves climber in down direction)
+      case DIRECTIONAL_CLIMB:
+        subsystem.retractDirectional(ClimbConfig.CLIMB_CLIMB_SPEED);
+        System.out.println("Climb: Directional Climb");
         break;
 
-      case UNCLIMB:
+      // Pushes up on climber (moves climber in up direction)
+      case DIRECTIONAL_UNCLIMB:
+        subsystem.extendDirectional(ClimbConfig.CLIMB_UNCLIMB_SPEED);
+        System.out.println("Climb: Directional Unclimb");
+        break;
+
+      // Moves climber to climb position (pulls robot up to climb position)
+      case POSITIONAL_CLIMB:
+        subsystem.move(ClimbConfig.CLIMB_CLIMB_ROTATION);
+        System.out.println("Climb: Positional Climb");
+        break;
+
+      // Moves climber to unclimb position (lets robot back down to climb position)
+      case POSITIONAL_UNCLIMB:
         subsystem.move(ClimbConfig.CLIMB_UNCLIMB_ROTATION);
-        System.out.println("Climb: Unclimbing");
+        System.out.println("Climb: Positional Unclimb");
         break;
 
       default:
@@ -47,6 +64,6 @@ public class ClimbCommand extends Command {
 
   @Override
   public boolean isFinished() {
-    return subsystem.atPosition();
+    return false;
   }
 }

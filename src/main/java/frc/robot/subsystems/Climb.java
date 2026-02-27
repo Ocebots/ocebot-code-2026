@@ -23,9 +23,8 @@ public class Climb extends SubsystemBase {
     climbConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     climbConfig.CurrentLimits.StatorCurrentLimitEnable = true;
     climbConfig.CurrentLimits.StatorCurrentLimit = ClimbConfig.CLIMB_STATOR_CURRENT_LIMIT;
-    ;
+
     climbConfig.CurrentLimits.SupplyCurrentLimit = ClimbConfig.CLIMB_SUPPLY_CURRENT_LIMIT;
-    ;
 
     climbConfig.MotionMagic.MotionMagicCruiseVelocity = ClimbConfig.CLIMB_MAX_CRUISE_VELOCITY;
     climbConfig.MotionMagic.MotionMagicAcceleration = ClimbConfig.CLIMB_TARGET_ACCELERATION;
@@ -45,7 +44,14 @@ public class Climb extends SubsystemBase {
     climb.setControl(new MotionMagicVoltage(rotation));
   }
 
-  public void directionalMove(double speed) {
+  // Set negatives and positives
+  public void extendDirectional(double speed) {
+    speed = Math.abs(speed);
+    climb.setControl(new DutyCycleOut(speed));
+  }
+
+  public void retractDirectional(double speed) {
+    speed = Math.abs(speed);
     climb.setControl(new DutyCycleOut(speed));
   }
 
@@ -59,13 +65,5 @@ public class Climb extends SubsystemBase {
 
   public boolean atPosition() {
     return (Math.abs(climb.getClosedLoopError().getValueAsDouble()) <= ClimbConfig.CLIMB_TOLERANCE);
-  }
-
-  public void climb() {
-    this.move(ClimbConfig.CLIMB_CLIMB_ROTATION);
-  }
-
-  public void unclimb() {
-    this.move(ClimbConfig.CLIMB_UNCLIMB_ROTATION);
   }
 }
