@@ -4,8 +4,11 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.*;
+
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
+import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -25,26 +28,74 @@ public class RobotContainer {
   private Kicker kicker = new Kicker();
   private CommandXboxController controller = new CommandXboxController(0);
   private SwerveDriveState driveState = new SwerveDriveState();
+  private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric();
+  private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
+  private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond);
+
+  // Should I move these to a config file?
 
   public RobotContainer() {
     configureBindings();
   }
 
   private void configureBindings() {
+    // Default Commands + Drivetrain
+    flywheel.setDefaultCommand(
+        new FlywheelCommand(flywheel, FlywheelCommand.Position.DEFAULT_SHOT, drivetrain));
+
+    // Drivetrain Teleop drive with controller inputs
+    drivetrain.setDefaultCommand(
+        drivetrain.applyRequest(
+            () ->
+                drive
+                    .withVelocityX(-controller.getLeftY() * MaxSpeed)
+                    .withVelocityY(-controller.getLeftX() * MaxSpeed)
+                    .withRotationalRate(-controller.getRightX() * MaxAngularRate)));
+
+    // Buttons
+
     // Y = Shoot Toggle
-    controller.y().toggleOnTrue(new KickerCommand(kicker, KickerCommand.Position.OUTTAKE));
+    controller
+        .y()
+        .toggleOnTrue(
+            Commands.parallel(
+                new KickerCommand(kicker, KickerCommand.Position.OUTTAKE),
+                new HopperCommand(hopper, HopperCommand.Position.SHOOT_RETRACT_EXTEND),
+                // We may need to change this, because if controller also presses X at the same time
+                // bad things could happen
+                new IntakeCommand(intake, IntakeCommand.Position.SLOW_INTAKE)));
     // X = intake toggle
     controller.x().toggleOnTrue(new IntakeCommand(intake, IntakeCommand.Position.INTAKE));
     // Right Stick Down = Extend/Retract Hopper
-    controller.rightStick().onTrue(new ToggleHopperCommand(hopper));
+    controller
+        .rightStick()
+        .toggleOnTrue(new HopperCommand(hopper, HopperCommand.Position.EXTEND_RETRACT));
     // Right Trigger = Climb Extend
-    controller.rightTrigger().toggleOnTrue(new ClimbCommand(climb, ClimbCommand.Position.CLIMB));
+    controller
+        .rightTrigger()
+        .whileTrue(new ClimbCommand(climb, ClimbCommand.Position.DIRECTIONAL_CLIMB));
     // Left Trigger = Climb Extend
-    controller.leftTrigger().toggleOnTrue(new ClimbCommand(climb, ClimbCommand.Position.UNCLIMB));
+    controller
+        .leftTrigger()
+        .whileTrue(new ClimbCommand(climb, ClimbCommand.Position.DIRECTIONAL_UNCLIMB));
+    // Back button = Zero Pigeon gyro
+    controller.back().onTrue(Commands.runOnce(() -> zeroPigeon()));
+    // Left Bumper = Flywheel Toggle for hub shot speeds
+    controller
+        .leftBumper()
+        .toggleOnTrue(new FlywheelCommand(flywheel, FlywheelCommand.Position.HUB_SHOT, drivetrain));
+    // Right Bumper = Flywheel Toggle for tower shot speeds
+    controller
+        .rightBumper()
+        .toggleOnTrue(
+            new FlywheelCommand(flywheel, FlywheelCommand.Position.TOWER_SHOT, drivetrain));
   }
 
   public Command getAutonomousCommand() {
-    return Commands.print("No autonomous command configured");
+    // Not finished yet
+    // Does withDeadline work here?
+    return (Commands.run(() -> flywheel.getDefaultCommand(), flywheel))
+        .withDeadline(Commands.waitSeconds(5));
   }
 
   public static void zeroPigeon() {

@@ -9,7 +9,8 @@ import frc.robot.subsystems.Intake;
 public class IntakeCommand extends Command {
   public static enum Position {
     INTAKE,
-    OUTTAKE
+    OUTTAKE,
+    SLOW_INTAKE
   }
 
   private Intake subsystem;
@@ -35,6 +36,11 @@ public class IntakeCommand extends Command {
       case OUTTAKE:
         subsystem.outtake(IntakeConfig.INTAKE_OUTTAKE_SPEED);
         System.out.println("Intake: Outtaking");
+        break;
+
+      case SLOW_INTAKE:
+        subsystem.slowIntake(IntakeConfig.INTAKE_SLOW_SPEED);
+        System.out.println("Intake: Slow Intaking");
         break;
 
       default:
