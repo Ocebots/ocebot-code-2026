@@ -45,12 +45,12 @@ public class RobotContainer {
 
     // Drivetrain Teleop drive with controller inputs
     drivetrain.setDefaultCommand(
-        drivetrain.applyRequest(
-            () ->
-                drive
-                    .withVelocityX(-controller.getLeftY() * MaxSpeed)
-                    .withVelocityY(-controller.getLeftX() * MaxSpeed)
-                    .withRotationalRate(-controller.getRightX() * MaxAngularRate)));
+        new DrivetrainCommand(
+            drivetrain,
+            DrivetrainCommand.Position.TELEOP,
+            controller.getLeftX(),
+            controller.getLeftY(),
+            controller.getRightX()));
 
     // Buttons
 
