@@ -8,7 +8,6 @@ import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
-import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -28,21 +27,12 @@ public class RobotContainer {
   private Kicker kicker = new Kicker();
   private CommandXboxController controller = new CommandXboxController(0);
   private SwerveDriveState driveState = new SwerveDriveState();
-  private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric();
-  private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
-  private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond);
-
-  // Should I move these to a config file?
 
   public RobotContainer() {
     configureBindings();
   }
 
   private void configureBindings() {
-    // Default Commands + Drivetrain
-    flywheel.setDefaultCommand(
-        new FlywheelCommand(flywheel, FlywheelCommand.Position.DEFAULT_SHOT, drivetrain));
-
     // Drivetrain Teleop drive with controller inputs
     drivetrain.setDefaultCommand(
         new DrivetrainCommand(
@@ -70,7 +60,7 @@ public class RobotContainer {
     controller
         .rightStick()
         .toggleOnTrue(new HopperCommand(hopper, HopperCommand.Position.EXTEND_RETRACT));
-    // Right Trigger = Climb Extend
+    // Right Trigger = Climb Retract
     controller
         .rightTrigger()
         .whileTrue(new ClimbCommand(climb, ClimbCommand.Position.DIRECTIONAL_CLIMB));
@@ -93,9 +83,9 @@ public class RobotContainer {
 
   public Command getAutonomousCommand() {
     // Not finished yet
-    // Does withDeadline work here?
-    return (Commands.run(() -> flywheel.getDefaultCommand(), flywheel))
-        .withDeadline(Commands.waitSeconds(5));
+    // return (new FlywheelCommand(flywheel, FlywheelCommand.Position.DEFAULT_SHOT, drivetrain)));
+    // Placeholder
+    return Commands.print("No autonomous command configured");
   }
 
   public static void zeroPigeon() {
