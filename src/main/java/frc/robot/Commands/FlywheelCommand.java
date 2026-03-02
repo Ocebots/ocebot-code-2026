@@ -55,6 +55,7 @@ public class FlywheelCommand extends Command {
       // Determines if robot should be prepared to shoot (if during active period or 5 seconds
       // before one), and runs at middle speed close to actual speeds as to not overheat motors but
       // to minimize spin-up time
+      // (Incomplete)
       case DEFAULT_SHOT:
         subsystem.shoot(
             ShotCalculator.calculateFlywheelDefaultShot(

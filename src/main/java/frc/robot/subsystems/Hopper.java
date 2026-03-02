@@ -69,4 +69,14 @@ public class Hopper extends SubsystemBase {
     return (Math.abs(hopper.getClosedLoopError().getValueAsDouble())
         <= HopperConfig.HOPPER_TOLERANCE);
   }
+
+  public boolean extended() {
+    return (Math.abs(hopper.getPosition().getValueAsDouble() - HopperConfig.HOPPER_EXTEND_ROTATION)
+        <= HopperConfig.HOPPER_TOLERANCE);
+  }
+
+  public boolean retracted() {
+    return (Math.abs(hopper.getPosition().getValueAsDouble() - HopperConfig.HOPPER_RETRACT_ROTATION)
+        <= HopperConfig.HOPPER_TOLERANCE);
+  }
 }

@@ -5,8 +5,11 @@ import static edu.wpi.first.units.Units.*;
 import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.config.TunerConstants;
+import frc.robot.helpers.ApplyModuleStates;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 
 @Logged
@@ -35,6 +38,16 @@ public class DrivetrainCommand extends Command {
           .withDriveRequestType(
               SwerveModule.DriveRequestType
                   .OpenLoopVoltage); // Use open-loop control for drive motors
+
+  SwerveModuleState[] states = {
+    new SwerveModuleState(0, Rotation2d.fromDegrees(45)),
+    new SwerveModuleState(0, Rotation2d.fromDegrees(135)),
+    new SwerveModuleState(0, Rotation2d.fromDegrees(315)),
+    new SwerveModuleState(0, Rotation2d.fromDegrees(225))
+  };
+
+  private final ApplyModuleStates applyRequest = new ApplyModuleStates();
+  private final SwerveRequest.SwerveDriveBrake brakeRequest = new SwerveRequest.SwerveDriveBrake();
 
   public DrivetrainCommand(
       CommandSwerveDrivetrain subsystem,
@@ -67,9 +80,12 @@ public class DrivetrainCommand extends Command {
         System.out.println("Drivetrain: Teleop Drive");
         break;
 
-      // (Incomplete) Mode for when shots are from a still position
+      // (Needs check) Mode for when shots are from a still position
       case STILL_SHOT:
-        // make X with wheels
+        // make X with wheels, set wheels to brake mode
+        applyRequest.ModuleStates = states;
+        subsystem.setControl(applyRequest);
+        subsystem.setControl(brakeRequest);
         System.out.println("Drivetrain: Still Shot Configuration");
         break;
 

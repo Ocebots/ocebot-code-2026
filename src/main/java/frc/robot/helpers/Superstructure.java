@@ -1,3 +1,3 @@
-package frc.robot;
+package frc.robot.helpers;
 
 public class Superstructure {}

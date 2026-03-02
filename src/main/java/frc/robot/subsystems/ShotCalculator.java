@@ -40,7 +40,7 @@ public class ShotCalculator {
   }
 
   // Determines active based on current match time
-  // Check through
+  // (Needs check)
   private static boolean computeActive(double timeLeft, boolean shift1ActiveForMe) {
     if (timeLeft > 130) { // transition into teleop
       return true;
@@ -58,7 +58,7 @@ public class ShotCalculator {
   }
 
   // Determine if should run shooter (if hub is active or 5 seconds from being active)
-  // Check through
+  // (Needs check)
   public static boolean shouldRunShooter(double graceSeconds) {
     Optional<DriverStation.Alliance> alliance = DriverStation.getAlliance();
     // If no alliance, return false
