@@ -38,6 +38,7 @@ public class DrivetrainCommand extends Command {
           .withDriveRequestType(
               SwerveModule.DriveRequestType
                   .OpenLoopVoltage); // Use open-loop control for drive motors
+  public static final double DEADBAND = 0.05;
 
   SwerveModuleState[] states = {
     new SwerveModuleState(0, Rotation2d.fromDegrees(45)),
