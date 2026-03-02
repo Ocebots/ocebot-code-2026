@@ -13,7 +13,8 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 public class DrivetrainCommand extends Command {
   public static enum Position {
     TELEOP,
-    STILL_SHOT
+    STILL_SHOT,
+    SOTM
   }
 
   private CommandSwerveDrivetrain subsystem;
@@ -34,6 +35,7 @@ public class DrivetrainCommand extends Command {
           .withDriveRequestType(
               SwerveModule.DriveRequestType
                   .OpenLoopVoltage); // Use open-loop control for drive motors
+  public static final double DEADBAND = 0.05;
 
   public DrivetrainCommand(
       CommandSwerveDrivetrain subsystem,
@@ -51,8 +53,10 @@ public class DrivetrainCommand extends Command {
   }
 
   @Override
-  public void initialize() {
+  public void execute() {
     switch (pose) {
+
+      // Default driving mode
       case TELEOP:
         subsystem.applyRequest(
             () ->
@@ -63,10 +67,19 @@ public class DrivetrainCommand extends Command {
                         -rightX * MaxAngularRate)); // Drive counterclockwise with negative X
         System.out.println("Drivetrain: Teleop Drive");
         break;
+
+      // (Incomplete) Mode for when shots are from a still position
       case STILL_SHOT:
         // make X with wheels
         System.out.println("Drivetrain: Still Shot Configuration");
         break;
+
+      // (Incomplete) Mode for moving shots
+      case SOTM:
+        // shoot on the move, reference Mechanical Advantage build log
+        System.out.println("Drivetrain: SOTM Drive");
+        break;
+
       default:
         break;
     }

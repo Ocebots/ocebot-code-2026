@@ -30,12 +30,8 @@ public class Intake extends SubsystemBase {
   }
 
   public void intake(double speed) {
-    speed = Math.abs(speed);
+    speed = -Math.abs(speed);
     intake.setControl(new DutyCycleOut(speed));
-  }
-
-  public void intake() {
-    intake.setControl(new DutyCycleOut(IntakeConfig.INTAKE_INTAKE_SPEED));
   }
 
   public void outtake(double speed) {
@@ -43,8 +39,10 @@ public class Intake extends SubsystemBase {
     intake.setControl(new DutyCycleOut(speed));
   }
 
-  public void outtake() {
-    intake.setControl(new DutyCycleOut(IntakeConfig.INTAKE_OUTTAKE_SPEED));
+  // Runs intake with shoot toggle, temp
+  public void slowIntake(double speed) {
+    speed = -Math.abs(speed);
+    intake.setControl(new DutyCycleOut(speed));
   }
 
   public void stop() {

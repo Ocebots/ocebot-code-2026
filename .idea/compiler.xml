@@ -18,6 +18,14 @@
         </processorPath>
         <module name="1022322.ocebot-code-2026.main" />
       </profile>
+      <profile name="Gradle Imported" enabled="true">
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/edu.wpi.first.epilogue/epilogue-processor-java/2026.1.1/42cc93c9a74622d8a8c4f6f1722c4ab4779df9fb/epilogue-processor-java-2026.1.1.jar" />
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/edu.wpi.first.epilogue/epilogue-runtime-java/2026.1.1/862de5ab03b6cf0bffaa85ffc290656178f55d86/epilogue-runtime-java-2026.1.1.jar" />
+        </processorPath>
+        <module name="ocebots.ocebot-code-2026.main" />
+      </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="ocebot-code-2026.ocebot-code-2026.main" target="17" />
@@ -35,6 +43,7 @@
       <module name="ocebot-code-2026.ocebot-code-2026.test" options="-XDstringConcat=inline" />
       <module name="ocebot-code-2026.ocebot-code-2026.test~1" options="-XDstringConcat=inline" />
       <module name="ocebot-code-2026.test" options="-XDstringConcat=inline" />
+      <module name="ocebots.ocebot-code-2026.main" options="-XDstringConcat=inline" />
     </option>
   </component>
 </project>

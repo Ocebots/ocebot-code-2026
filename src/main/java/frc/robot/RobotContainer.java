@@ -19,14 +19,11 @@ import frc.robot.subsystems.*;
 
 @Logged
 public class RobotContainer {
-  private Turret turret = new Turret();
-  private Hood hood = new Hood();
   private Flywheel flywheel = new Flywheel();
   private CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
   private Hopper hopper = new Hopper();
   private Climb climb = new Climb();
   private Intake intake = new Intake();
-  private Spindexer spindexer = new Spindexer();
   private Kicker kicker = new Kicker();
   private CommandXboxController controller = new CommandXboxController(0);
   private SwerveDriveState driveState = new SwerveDriveState();
@@ -35,9 +32,59 @@ public class RobotContainer {
     configureBindings();
   }
 
-  private void configureBindings() {}
+  private void configureBindings() {
+    // Drivetrain Teleop drive with controller inputs
+    drivetrain.setDefaultCommand(
+        new DrivetrainCommand(
+            drivetrain,
+            DrivetrainCommand.Position.TELEOP,
+            controller.getLeftX(),
+            controller.getLeftY(),
+            controller.getRightX()));
+
+    // Buttons
+
+    // Y = Shoot Toggle
+    controller
+        .y()
+        .toggleOnTrue(
+            Commands.parallel(
+                new KickerCommand(kicker, KickerCommand.Position.OUTTAKE),
+                new HopperCommand(hopper, HopperCommand.Position.SHOOT_RETRACT_EXTEND),
+                // We may need to change this, because if controller also presses X at the same time
+                // bad things could happen
+                new IntakeCommand(intake, IntakeCommand.Position.SLOW_INTAKE)));
+    // X = intake toggle
+    controller.x().toggleOnTrue(new IntakeCommand(intake, IntakeCommand.Position.INTAKE));
+    // Right Stick Down = Extend/Retract Hopper
+    controller
+        .rightStick()
+        .toggleOnTrue(new HopperCommand(hopper, HopperCommand.Position.EXTEND_RETRACT));
+    // Right Trigger = Climb Retract
+    controller
+        .rightTrigger()
+        .whileTrue(new ClimbCommand(climb, ClimbCommand.Position.DIRECTIONAL_CLIMB));
+    // Left Trigger = Climb Extend
+    controller
+        .leftTrigger()
+        .whileTrue(new ClimbCommand(climb, ClimbCommand.Position.DIRECTIONAL_UNCLIMB));
+    // Back button = Zero Pigeon gyro
+    controller.back().onTrue(Commands.runOnce(() -> zeroPigeon()));
+    // Left Bumper = Flywheel Toggle for hub shot speeds
+    controller
+        .leftBumper()
+        .toggleOnTrue(new FlywheelCommand(flywheel, FlywheelCommand.Position.HUB_SHOT, drivetrain));
+    // Right Bumper = Flywheel Toggle for tower shot speeds
+    controller
+        .rightBumper()
+        .toggleOnTrue(
+            new FlywheelCommand(flywheel, FlywheelCommand.Position.TOWER_SHOT, drivetrain));
+  }
 
   public Command getAutonomousCommand() {
+    // Not finished yet
+    // return (new FlywheelCommand(flywheel, FlywheelCommand.Position.DEFAULT_SHOT, drivetrain)));
+    // Placeholder
     return Commands.print("No autonomous command configured");
   }
 
