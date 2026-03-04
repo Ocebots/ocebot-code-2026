@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package frc.robot.helpers;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
@@ -66,6 +66,11 @@ public class ShotCalculator {
       return false;
     }
 
+    // Hub is always enabled in autonomous.
+    if (DriverStation.isAutonomousEnabled()) {
+      return true;
+    }
+
     // If not teleop, return false
     if (!DriverStation.isTeleopEnabled()) {
       return false;
@@ -79,16 +84,14 @@ public class ShotCalculator {
       return true;
     }
 
-    boolean redInactiveFirst;
+    boolean redInactiveFirst = false;
     switch (gameData.charAt(0)) {
-      case 'R':
-        redInactiveFirst = true;
-        break;
-      case 'B':
-        redInactiveFirst = false;
-        break;
-      default:
+      case 'R' -> redInactiveFirst = true;
+      case 'B' -> redInactiveFirst = false;
+      default -> {
+        // If we have invalid game data, assume hub is active.
         return true;
+      }
     }
 
     boolean iAmRed = alliance.get() == DriverStation.Alliance.Red;

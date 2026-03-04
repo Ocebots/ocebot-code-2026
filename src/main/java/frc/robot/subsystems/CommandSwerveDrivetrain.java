@@ -312,4 +312,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     super.addVisionMeasurement(
         visionRobotPoseMeters, Utils.fpgaToCurrentTime(timestampSeconds), visionMeasurementStdDevs);
   }
+
+  @Override
+  public void simulationPeriodic() {
+    this.updateSimState(0.02, 12);
+  }
 }

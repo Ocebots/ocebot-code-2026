@@ -1,4 +1,4 @@
-package frc.robot.Commands;
+package frc.robot.commands;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -13,9 +13,9 @@ public class KickerCommand extends Command {
   }
 
   private Kicker subsystem;
-  private KickerCommand.Position pose;
+  private Position pose;
 
-  public KickerCommand(Kicker subsystem, KickerCommand.Position pose) {
+  public KickerCommand(Kicker subsystem, Position pose) {
     this.pose = pose;
     this.subsystem = subsystem;
 

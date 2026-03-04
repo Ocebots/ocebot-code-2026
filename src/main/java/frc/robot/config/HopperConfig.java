@@ -12,6 +12,10 @@ public class HopperConfig {
   public static final double HOPPER_I = 0;
   public static final double HOPPER_D = 0;
 
+  public static final double SLOW_HOPPER_P = 0;
+  public static final double SLOW_HOPPER_I = 0;
+  public static final double SLOW_HOPPER_D = 0;
+
   public static final double HOPPER_TOLERANCE = 0.005;
 
   // Set

@@ -1,4 +1,4 @@
-package frc.robot.Commands;
+package frc.robot.commands;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -10,7 +10,8 @@ public class IntakeCommand extends Command {
   public static enum Position {
     INTAKE,
     OUTTAKE,
-    SLOW_INTAKE
+    SLOW_INTAKE,
+    DEFAULT
   }
 
   private Intake subsystem;
@@ -38,6 +39,7 @@ public class IntakeCommand extends Command {
         System.out.println("Intake: Outtaking");
         break;
 
+      // Slow intake for shooting
       case SLOW_INTAKE:
         subsystem.slowIntake(IntakeConfig.INTAKE_SLOW_SPEED);
         System.out.println("Intake: Slow Intaking");

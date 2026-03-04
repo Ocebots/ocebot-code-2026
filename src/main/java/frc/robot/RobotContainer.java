@@ -4,15 +4,13 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.*;
-
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.Commands.*;
+import frc.robot.commands.*;
 import frc.robot.config.CANMappings;
 import frc.robot.config.TunerConstants;
 import frc.robot.subsystems.*;
@@ -28,38 +26,58 @@ public class RobotContainer {
   private CommandXboxController controller = new CommandXboxController(0);
   private SwerveDriveState driveState = new SwerveDriveState();
 
+  private Command shootGroup =
+      Commands.parallel(
+              new KickerCommand(kicker, KickerCommand.Position.INTAKE),
+              new HopperCommand(hopper, HopperCommand.Position.SHOOT_RETRACT_EXTEND),
+              new IntakeCommand(intake, IntakeCommand.Position.SLOW_INTAKE),
+              Commands.run(() -> System.out.println("Hopper: Shooting")))
+          .finallyDo(
+              interrupted -> {
+                new HopperCommand(hopper, HopperCommand.Position.EXTEND);
+                System.out.println("Hopper: Re Extending after Shot");
+              });
+
   public RobotContainer() {
     configureBindings();
   }
 
   private void configureBindings() {
-    // Drivetrain Teleop drive with controller inputs
+    /* Default commands */
+    // Drive
     drivetrain.setDefaultCommand(
         new DrivetrainCommand(
             drivetrain,
             DrivetrainCommand.Position.TELEOP,
-            controller.getLeftX(),
-            controller.getLeftY(),
-            controller.getRightX()));
+            controller::getLeftX,
+            controller::getLeftY,
+            controller::getRightX));
+    // Flywheel
+    flywheel.setDefaultCommand(
+        new FlywheelCommand(flywheel, FlywheelCommand.Position.DEFAULT_SHOT, drivetrain));
 
-    // Buttons
-
+    /* Controls */
     // Y = Shoot Toggle
+    controller.y().toggleOnTrue(shootGroup);
+    // X = Intake Toggle
     controller
-        .y()
+        .x()
         .toggleOnTrue(
-            Commands.parallel(
-                new KickerCommand(kicker, KickerCommand.Position.OUTTAKE),
-                new HopperCommand(hopper, HopperCommand.Position.SHOOT_RETRACT_EXTEND),
-                // We may need to change this, because if controller also presses X at the same time
-                // bad things could happen
-                new IntakeCommand(intake, IntakeCommand.Position.SLOW_INTAKE)));
-    // X = intake toggle
-    controller.x().toggleOnTrue(new IntakeCommand(intake, IntakeCommand.Position.INTAKE));
+            Commands.runOnce(
+                () -> {
+                  if (!shootGroup.isScheduled()) {
+                    new IntakeCommand(intake, IntakeCommand.Position.INTAKE);
+                  }
+                }));
     // Right Stick Down = Extend/Retract Hopper
     controller
         .rightStick()
-        .toggleOnTrue(new HopperCommand(hopper, HopperCommand.Position.EXTEND_RETRACT));
+        .onTrue(
+            Commands.either(
+                Commands.none(),
+                new HopperCommand(hopper, HopperCommand.Position.EXTEND_RETRACT),
+                shootGroup::isScheduled));
+
     // Right Trigger = Climb Retract
     controller
         .rightTrigger()
@@ -79,11 +97,15 @@ public class RobotContainer {
         .rightBumper()
         .toggleOnTrue(
             new FlywheelCommand(flywheel, FlywheelCommand.Position.TOWER_SHOT, drivetrain));
+    // A = Flywheel Toggle of calculated shots
+    controller
+        .a()
+        .toggleOnTrue(
+            new FlywheelCommand(flywheel, FlywheelCommand.Position.CALCULATED_SHOT, drivetrain));
   }
 
   public Command getAutonomousCommand() {
     // Not finished yet
-    // return (new FlywheelCommand(flywheel, FlywheelCommand.Position.DEFAULT_SHOT, drivetrain)));
     // Placeholder
     return Commands.print("No autonomous command configured");
   }
