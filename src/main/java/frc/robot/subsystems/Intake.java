@@ -39,12 +39,6 @@ public class Intake extends SubsystemBase {
     intake.setControl(new DutyCycleOut(speed));
   }
 
-  // Runs intake with shoot toggle, temp
-  public void slowIntake(double speed) {
-    speed = -Math.abs(speed);
-    intake.setControl(new DutyCycleOut(speed));
-  }
-
   public void stop() {
     intake.stopMotor();
   }

@@ -10,8 +10,7 @@ public class IntakeCommand extends Command {
   public static enum Position {
     INTAKE,
     OUTTAKE,
-    SLOW_INTAKE,
-    DEFAULT
+    SLOW_INTAKE
   }
 
   private Intake subsystem;
@@ -27,22 +26,19 @@ public class IntakeCommand extends Command {
   @Override
   public void initialize() {
     switch (pose) {
-      // Runs intake
+      // Runs intakeDutyCycleOut
       case INTAKE:
         subsystem.intake(IntakeConfig.INTAKE_INTAKE_SPEED);
-        System.out.println("Intake: Intaking");
         break;
 
-      // Runs intake in outtaking direction
+      // Runs intakeDutyCycleOut in outtaking direction
       case OUTTAKE:
         subsystem.outtake(IntakeConfig.INTAKE_OUTTAKE_SPEED);
-        System.out.println("Intake: Outtaking");
         break;
 
-      // Slow intake for shooting
+      // Slow intakeDutyCycleOut for shooting
       case SLOW_INTAKE:
-        subsystem.slowIntake(IntakeConfig.INTAKE_SLOW_SPEED);
-        System.out.println("Intake: Slow Intaking");
+        subsystem.intake(IntakeConfig.INTAKE_SLOW_SPEED);
         break;
 
       default:

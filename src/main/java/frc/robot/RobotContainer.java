@@ -8,6 +8,7 @@ import com.ctre.phoenix6.hardware.Pigeon2;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.*;
@@ -29,14 +30,12 @@ public class RobotContainer {
   private Command shootGroup =
       Commands.parallel(
               new KickerCommand(kicker, KickerCommand.Position.INTAKE),
-              new HopperCommand(hopper, HopperCommand.Position.SHOOT_RETRACT_EXTEND),
-              new IntakeCommand(intake, IntakeCommand.Position.SLOW_INTAKE),
-              Commands.run(() -> System.out.println("Hopper: Shooting")))
+              new HopperCommand(hopper, HopperCommand.Position.SHOOT_RETRACT),
+              new IntakeCommand(intake, IntakeCommand.Position.SLOW_INTAKE))
           .finallyDo(
-              interrupted -> {
-                new HopperCommand(hopper, HopperCommand.Position.EXTEND);
-                System.out.println("Hopper: Re Extending after Shot");
-              });
+              interrupt ->
+                  CommandScheduler.getInstance()
+                      .schedule(new HopperCommand(hopper, HopperCommand.Position.SHOOT_EXTEND)));
 
   public RobotContainer() {
     configureBindings();
@@ -62,22 +61,13 @@ public class RobotContainer {
     // X = Intake Toggle
     controller
         .x()
-        .toggleOnTrue(
-            Commands.runOnce(
-                () -> {
-                  if (!shootGroup.isScheduled()) {
-                    new IntakeCommand(intake, IntakeCommand.Position.INTAKE);
-                  }
-                }));
+        .and(() -> !shootGroup.isScheduled())
+        .toggleOnTrue(new IntakeCommand(intake, IntakeCommand.Position.INTAKE));
     // Right Stick Down = Extend/Retract Hopper
     controller
         .rightStick()
-        .onTrue(
-            Commands.either(
-                Commands.none(),
-                new HopperCommand(hopper, HopperCommand.Position.EXTEND_RETRACT),
-                shootGroup::isScheduled));
-
+        .and(() -> !shootGroup.isScheduled())
+        .onTrue(new HopperCommand(hopper, HopperCommand.Position.EXTEND_RETRACT));
     // Right Trigger = Climb Retract
     controller
         .rightTrigger()

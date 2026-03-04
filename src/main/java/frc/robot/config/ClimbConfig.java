@@ -12,7 +12,7 @@ public class ClimbConfig {
   public static final double CLIMB_I = 0;
   public static final double CLIMB_D = 0;
 
-  public static final double CLIMB_TOLERANCE = 0.005;
+  public static final double CLIMB_TOLERANCE = 0.01;
 
   // Set
   public static final double CLIMB_UNCLIMB_ROTATION = 0;

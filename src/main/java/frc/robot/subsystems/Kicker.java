@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -33,6 +34,13 @@ public class Kicker extends SubsystemBase {
     kickerBackConfig.CurrentLimits.StatorCurrentLimit =
         KickerConfig.KICKER_BACK_STATOR_CURRENT_LIMIT;
 
+    kickerFrontConfig.Slot0.kP = KickerConfig.KICKER_P;
+    kickerFrontConfig.Slot0.kI = KickerConfig.KICKER_I;
+    kickerFrontConfig.Slot0.kD = KickerConfig.KICKER_D;
+    kickerFrontConfig.Slot0.kS = KickerConfig.KICKER_S;
+    kickerFrontConfig.Slot0.kV = KickerConfig.KICKER_V;
+    kickerFrontConfig.Slot0.kA = KickerConfig.KICKER_A;
+
     kickerFrontConfig.Feedback.SensorToMechanismRatio = KickerConfig.KICKER_FRONT_GEAR_RATIO;
     kickerFrontConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     kickerFrontConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
@@ -46,11 +54,24 @@ public class Kicker extends SubsystemBase {
 
   public void intake(double speed) {
     speed = Math.abs(speed);
+    kickerFront.setControl(new MotionMagicVelocityVoltage(-speed));
+    kickerBack.setControl(new MotionMagicVelocityVoltage(speed));
+  }
+
+  public void intake(double frontSpeed, double backSpeed) {
+    frontSpeed = Math.abs(frontSpeed);
+    backSpeed = Math.abs(backSpeed);
+    kickerFront.setControl(new MotionMagicVelocityVoltage(-frontSpeed));
+    kickerBack.setControl(new MotionMagicVelocityVoltage(backSpeed));
+  }
+
+  public void intakeDutyCycleOut(double speed) {
+    speed = Math.abs(speed);
     kickerFront.setControl(new DutyCycleOut(-speed));
     kickerBack.setControl(new DutyCycleOut(speed));
   }
 
-  public void intake(double frontSpeed, double backSpeed) {
+  public void intakeDutyCycleOut(double frontSpeed, double backSpeed) {
     frontSpeed = Math.abs(frontSpeed);
     backSpeed = Math.abs(backSpeed);
     kickerFront.setControl(new DutyCycleOut(-frontSpeed));
