@@ -9,10 +9,19 @@ public class KickerConfig {
   public static final double KICKER_BACK_GEAR_RATIO = 3;
 
   // Set
+  public static final double KICKER_P = 0;
+  public static final double KICKER_I = 0;
+  public static final double KICKER_D = 0;
+  public static final double KICKER_S = 0;
+  public static final double KICKER_V = 0;
+  public static final double KICKER_A = 0;
+
   public static final double KICKER_INTAKE_SPEED = 0;
   public static final double KICKER_OUTTAKE_SPEED = 0;
+
   public static final double KICKER_FRONT_INTAKE_SPEED = 0;
   public static final double KICKER_FRONT_OUTTAKE_SPEED = 0;
+
   public static final double KICKER_BACK_INTAKE_SPEED = 0;
   public static final double KICKER_BACK_OUTTAKE_SPEED = 0;
 }

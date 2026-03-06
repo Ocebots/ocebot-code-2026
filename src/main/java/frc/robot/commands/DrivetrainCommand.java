@@ -1,13 +1,17 @@
-package frc.robot.Commands;
+package frc.robot.commands;
 
 import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.config.TunerConstants;
+import frc.robot.helpers.ApplyModuleStates;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import java.util.function.DoubleSupplier;
 
 @Logged
 public class DrivetrainCommand extends Command {
@@ -19,9 +23,9 @@ public class DrivetrainCommand extends Command {
 
   private CommandSwerveDrivetrain subsystem;
   private DrivetrainCommand.Position pose;
-  private double leftY;
-  private double leftX;
-  private double rightX;
+  private DoubleSupplier leftY;
+  private DoubleSupplier leftX;
+  private DoubleSupplier rightX;
 
   private final double MaxSpeed =
       TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -35,14 +39,22 @@ public class DrivetrainCommand extends Command {
           .withDriveRequestType(
               SwerveModule.DriveRequestType
                   .OpenLoopVoltage); // Use open-loop control for drive motors
-  public static final double DEADBAND = 0.05;
+
+  SwerveModuleState[] states = {
+    new SwerveModuleState(0, Rotation2d.fromDegrees(45)),
+    new SwerveModuleState(0, Rotation2d.fromDegrees(135)),
+    new SwerveModuleState(0, Rotation2d.fromDegrees(315)),
+    new SwerveModuleState(0, Rotation2d.fromDegrees(225))
+  };
+  private final ApplyModuleStates applyRequest = new ApplyModuleStates();
+  private final SwerveRequest.SwerveDriveBrake brakeRequest = new SwerveRequest.SwerveDriveBrake();
 
   public DrivetrainCommand(
       CommandSwerveDrivetrain subsystem,
       DrivetrainCommand.Position pose,
-      double leftX,
-      double leftY,
-      double rightX) {
+      DoubleSupplier leftX,
+      DoubleSupplier leftY,
+      DoubleSupplier rightX) {
     this.pose = pose;
     this.subsystem = subsystem;
     this.leftX = leftX;
@@ -61,16 +73,21 @@ public class DrivetrainCommand extends Command {
         subsystem.applyRequest(
             () ->
                 drive
-                    .withVelocityX(-leftY * MaxSpeed) // Drive forward with negative Y (forward)
-                    .withVelocityY(-leftX * MaxSpeed) // Drive left with negative X
+                    .withVelocityX(
+                        -leftY.getAsDouble() * MaxSpeed) // Drive forward with negative Y (forward)
+                    .withVelocityY(-leftX.getAsDouble() * MaxSpeed) // Drive left with negative X
                     .withRotationalRate(
-                        -rightX * MaxAngularRate)); // Drive counterclockwise with negative X
-        System.out.println("Drivetrain: Teleop Drive");
+                        -rightX.getAsDouble()
+                            * MaxAngularRate)); // Drive counterclockwise with negative X
+        //        System.out.println("Drivetrain: Teleop");
         break;
 
-      // (Incomplete) Mode for when shots are from a still position
+      // (Needs check) Mode for when shots are from a still position
       case STILL_SHOT:
-        // make X with wheels
+        // make X with wheels, set wheels to brake mode
+        applyRequest.ModuleStates = states;
+        subsystem.setControl(applyRequest);
+        subsystem.setControl(brakeRequest);
         System.out.println("Drivetrain: Still Shot Configuration");
         break;
 

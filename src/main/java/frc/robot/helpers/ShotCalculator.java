@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package frc.robot.helpers;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
@@ -40,7 +40,7 @@ public class ShotCalculator {
   }
 
   // Determines active based on current match time
-  // Check through
+  // (Needs check)
   private static boolean computeActive(double timeLeft, boolean shift1ActiveForMe) {
     if (timeLeft > 130) { // transition into teleop
       return true;
@@ -58,12 +58,17 @@ public class ShotCalculator {
   }
 
   // Determine if should run shooter (if hub is active or 5 seconds from being active)
-  // Check through
+  // (Needs check)
   public static boolean shouldRunShooter(double graceSeconds) {
     Optional<DriverStation.Alliance> alliance = DriverStation.getAlliance();
     // If no alliance, return false
     if (alliance.isEmpty()) {
       return false;
+    }
+
+    // Hub is always enabled in autonomous.
+    if (DriverStation.isAutonomousEnabled()) {
+      return true;
     }
 
     // If not teleop, return false
@@ -79,16 +84,14 @@ public class ShotCalculator {
       return true;
     }
 
-    boolean redInactiveFirst;
+    boolean redInactiveFirst = false;
     switch (gameData.charAt(0)) {
-      case 'R':
-        redInactiveFirst = true;
-        break;
-      case 'B':
-        redInactiveFirst = false;
-        break;
-      default:
+      case 'R' -> redInactiveFirst = true;
+      case 'B' -> redInactiveFirst = false;
+      default -> {
+        // If we have invalid game data, assume hub is active.
         return true;
+      }
     }
 
     boolean iAmRed = alliance.get() == DriverStation.Alliance.Red;

@@ -34,5 +34,5 @@ public class FlywheelConfig {
   public static final double FLYWHEEL_HUB_SHOT_SPEED = 0;
   public static final double FLYWHEEL_TOWER_SHOT_SPEED = 0;
   public static final double FLYWHEEL_DEFAULT_SHOT_SPEED = 0;
-  public static final double FLYWHEEL_TOLERANCE = 0.005;
+  public static final double FLYWHEEL_TOLERANCE = 5;
 }

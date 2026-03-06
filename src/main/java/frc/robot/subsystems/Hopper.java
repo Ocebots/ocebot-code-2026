@@ -34,6 +34,10 @@ public class Hopper extends SubsystemBase {
     hopperConfig.Slot0.kI = HopperConfig.HOPPER_I;
     hopperConfig.Slot0.kD = HopperConfig.HOPPER_D;
 
+    hopperConfig.Slot1.kP = HopperConfig.SLOW_HOPPER_P;
+    hopperConfig.Slot1.kI = HopperConfig.SLOW_HOPPER_I;
+    hopperConfig.Slot1.kD = HopperConfig.SLOW_HOPPER_D;
+
     hopperConfig.Feedback.SensorToMechanismRatio = HopperConfig.HOPPER_GEAR_RATIO;
 
     hopperConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
@@ -44,7 +48,11 @@ public class Hopper extends SubsystemBase {
   }
 
   public void move(double rotation) {
-    hopper.setControl(new MotionMagicVoltage(rotation));
+    hopper.setControl(new MotionMagicVoltage(rotation).withSlot(0));
+  }
+
+  public void slowMove(double rotation) {
+    hopper.setControl(new MotionMagicVoltage(rotation).withSlot(1));
   }
 
   public void extendDirectional(double speed) {
@@ -67,6 +75,16 @@ public class Hopper extends SubsystemBase {
 
   public boolean atPosition() {
     return (Math.abs(hopper.getClosedLoopError().getValueAsDouble())
+        <= HopperConfig.HOPPER_TOLERANCE);
+  }
+
+  public boolean extended() {
+    return (Math.abs(hopper.getPosition().getValueAsDouble() - HopperConfig.HOPPER_EXTEND_ROTATION)
+        <= HopperConfig.HOPPER_TOLERANCE);
+  }
+
+  public boolean retracted() {
+    return (Math.abs(hopper.getPosition().getValueAsDouble() - HopperConfig.HOPPER_RETRACT_ROTATION)
         <= HopperConfig.HOPPER_TOLERANCE);
   }
 }
