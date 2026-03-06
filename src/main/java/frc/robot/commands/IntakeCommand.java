@@ -29,6 +29,7 @@ public class IntakeCommand extends Command {
       // Runs intakeDutyCycleOut
       case INTAKE:
         subsystem.intake(IntakeConfig.INTAKE_INTAKE_SPEED);
+        System.out.println("Intake: Intaking");
         break;
 
       // Runs intakeDutyCycleOut in outtaking direction

@@ -35,20 +35,20 @@ public class FlywheelCommand extends Command {
       // Spins flywheels at proper speed for shooting from hub
       case HUB_SHOT:
         subsystem.shoot(FlywheelConfig.FLYWHEEL_HUB_SHOT_SPEED);
-        // System.out.println("Flywheel: Hub Shot");
+//         System.out.println("Flywheel: Hub Shot");
         break;
 
       // Spins flywheels at proper speed for shooting from tower
       case TOWER_SHOT:
         subsystem.shoot(FlywheelConfig.FLYWHEEL_TOWER_SHOT_SPEED);
-        // System.out.println("Flywheel: Tower Shot");
+//         System.out.println("Flywheel: Tower Shot");
         break;
 
       // Spins flywheels at estimated speed given distance from hub
       case CALCULATED_SHOT:
         subsystem.shoot(
             ShotCalculator.calculateFlywheelShot(drivetrain.getState().Pose.getTranslation()));
-        // System.out.println("Flywheel: Calculated Shot");
+//         System.out.println("Flywheel: Calculated Shot");
         break;
 
       // Determines if robot should be prepared to shoot (if during active period or 5 seconds
@@ -59,7 +59,7 @@ public class FlywheelCommand extends Command {
         subsystem.shoot(
             ShotCalculator.calculateFlywheelDefaultShot(
                 drivetrain.getState().Pose.getTranslation()));
-        // System.out.println("Flywheel: Default Shot");
+//         System.out.println("Flywheel: Default Shot");
         break;
 
       // Runs flywheels in outtake direction in case of jam

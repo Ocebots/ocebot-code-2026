@@ -79,6 +79,7 @@ public class DrivetrainCommand extends Command {
                     .withRotationalRate(
                         -rightX.getAsDouble()
                             * MaxAngularRate)); // Drive counterclockwise with negative X
+//        System.out.println("Drivetrain: Teleop");
         break;
 
       // (Needs check) Mode for when shots are from a still position
