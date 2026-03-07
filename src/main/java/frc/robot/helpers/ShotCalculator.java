@@ -26,6 +26,7 @@ public class ShotCalculator {
     return 0;
   }
 
+  /* Helper Methods */
   public static Translation2d calculateGoalPosition() {
     Optional<DriverStation.Alliance> alliance = DriverStation.getAlliance();
     if (alliance.isPresent()) {
@@ -129,6 +130,9 @@ public class ShotCalculator {
 
   // Set map inputs
   static {
-    DISTANCE_TO_FLYWHEEL.put(Units.inchesToMeters(1.0), 1.0);
+    DISTANCE_TO_FLYWHEEL.put(Units.inchesToMeters(171), 87.0);
+    DISTANCE_TO_FLYWHEEL.put(Units.inchesToMeters(141), 70.0);
+    DISTANCE_TO_FLYWHEEL.put(Units.inchesToMeters(90), 60.0);
+    DISTANCE_TO_FLYWHEEL.put(Units.inchesToMeters(61), 50.0);
   }
 }

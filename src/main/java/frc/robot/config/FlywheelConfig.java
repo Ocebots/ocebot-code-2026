@@ -22,11 +22,11 @@ public class FlywheelConfig {
   // Set
   public static final double FLYWHEEL_LEFT_MAX_CRUISE_VELOCITY = 3000;
   public static final double FLYWHEEL_LEFT_TARGET_ACCELERATION = 500;
-  public static final double FLYWHEEL_LEFT_P = 10;
+  public static final double FLYWHEEL_LEFT_P = 0.5;
   public static final double FLYWHEEL_LEFT_I = 0;
   public static final double FLYWHEEL_LEFT_D = 0;
-  public static final double FLYWHEEL_LEFT_S = 0;
-  public static final double FLYWHEEL_LEFT_V = 0;
+  public static final double FLYWHEEL_LEFT_S = 0.18;
+  public static final double FLYWHEEL_LEFT_V = 0.115;
   public static final double FLYWHEEL_LEFT_A = 0;
 
   // Set
