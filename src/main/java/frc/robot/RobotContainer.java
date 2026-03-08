@@ -24,7 +24,7 @@ public class RobotContainer {
   private Climb climb = new Climb();
   private Intake intake = new Intake();
   private Kicker kicker = new Kicker();
-  private CommandXboxController controller = new CommandXboxController(0);
+  private CommandXboxController controller = new CommandXboxController(1);
   private SwerveDriveState driveState = new SwerveDriveState();
 
   private Command shootGroup =
@@ -52,8 +52,8 @@ public class RobotContainer {
             controller::getLeftY,
             controller::getRightX));
     // Flywheel
-    flywheel.setDefaultCommand(
-        new FlywheelCommand(flywheel, FlywheelCommand.Position.DEFAULT_SHOT, drivetrain));
+//    flywheel.setDefaultCommand(
+//        new FlywheelCommand(flywheel, FlywheelCommand.Position.DEFAULT_SHOT, drivetrain));
 
     /* Controls */
     // Y = Shoot Toggle
@@ -67,31 +67,36 @@ public class RobotContainer {
     controller
         .rightStick()
         .and(() -> !shootGroup.isScheduled())
-        .onTrue(new HopperCommand(hopper, HopperCommand.Position.EXTEND_RETRACT));
-    // Right Trigger = Climb Retract
-    controller
-        .rightTrigger()
-        .whileTrue(new ClimbCommand(climb, ClimbCommand.Position.DIRECTIONAL_CLIMB));
-    // Left Trigger = Climb Extend
-    controller
-        .leftTrigger()
-        .whileTrue(new ClimbCommand(climb, ClimbCommand.Position.DIRECTIONAL_UNCLIMB));
+        .onTrue(
+            new HopperCommand(hopper, HopperCommand.Position.EXTEND_RETRACT)
+                .alongWith(Commands.runOnce(() -> System.out.println("Hopper Pressed"))));
+    //    // Right Trigger = Climb Retract
+    //    controller
+    //        .rightTrigger()
+    //        .whileTrue(new ClimbCommand(climb, ClimbCommand.Position.DIRECTIONAL_CLIMB));
+    //    // Left Trigger = Climb Extend
+    //    controller
+    //        .leftTrigger()
+    //        .whileTrue(new ClimbCommand(climb, ClimbCommand.Position.DIRECTIONAL_UNCLIMB));
     // Back button = Zero Pigeon gyro
     controller.back().onTrue(Commands.runOnce(() -> zeroPigeon()));
-    // Left Bumper = Flywheel Toggle for hub shot speeds
-    controller
-        .leftBumper()
-        .toggleOnTrue(new FlywheelCommand(flywheel, FlywheelCommand.Position.HUB_SHOT, drivetrain));
-    // Right Bumper = Flywheel Toggle for tower shot speeds
-    controller
-        .rightBumper()
-        .toggleOnTrue(
-            new FlywheelCommand(flywheel, FlywheelCommand.Position.TOWER_SHOT, drivetrain));
-    // A = Flywheel Toggle of calculated shots
-    controller
-        .a()
-        .toggleOnTrue(
-            new FlywheelCommand(flywheel, FlywheelCommand.Position.CALCULATED_SHOT, drivetrain));
+    //    // Left Bumper = Flywheel Toggle for hub shot speeds
+    //    controller
+    //        .leftBumper()
+    //        .toggleOnTrue(new FlywheelCommand(flywheel, FlywheelCommand.Position.HUB_SHOT,
+    // drivetrain));
+    //    // Right Bumper = Flywheel Toggle for tower shot speeds
+    //    controller
+    //        .rightBumper()
+    //        .toggleOnTrue(
+    //            new FlywheelCommand(flywheel, FlywheelCommand.Position.TOWER_SHOT, drivetrain));
+    //    // A = Flywheel Toggle of calculated shots
+    //    controller
+    //        .a()
+    //        .toggleOnTrue(
+    //            new FlywheelCommand(flywheel, FlywheelCommand.Position.CALCULATED_SHOT,
+    // drivetrain));
+    controller.povDown().onTrue(Commands.runOnce(() -> hopper.zero(), hopper));
   }
 
   public Command getAutonomousCommand() {

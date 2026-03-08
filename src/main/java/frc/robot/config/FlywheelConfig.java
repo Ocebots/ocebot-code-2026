@@ -31,8 +31,8 @@ public class FlywheelConfig {
 
   // Set
   public static final double FLYWHEEL_OUTTAKE_SPEED = 0;
-  public static final double FLYWHEEL_HUB_SHOT_SPEED = 0;
+  public static final double FLYWHEEL_HUB_SHOT_SPEED = 40;
   public static final double FLYWHEEL_TOWER_SHOT_SPEED = 0;
-  public static final double FLYWHEEL_DEFAULT_SHOT_SPEED = 0;
+  public static final double FLYWHEEL_DEFAULT_SHOT_SPEED = 40;
   public static final double FLYWHEEL_TOLERANCE = 5;
 }
