@@ -26,16 +26,19 @@ public class RobotContainer {
   private Kicker kicker = new Kicker();
   private CommandXboxController controller = new CommandXboxController(1);
   private SwerveDriveState driveState = new SwerveDriveState();
+  public static boolean isExtended = false;
 
   private Command shootGroup =
       Commands.parallel(
               new KickerCommand(kicker, KickerCommand.Position.INTAKE),
-              new HopperCommand(hopper, HopperCommand.Position.SHOOT_RETRACT),
+              new HopperCommand(hopper, HopperCommand.Position.SHOOT_RETRACT, isExtended),
               new IntakeCommand(intake, IntakeCommand.Position.SLOW_INTAKE))
           .finallyDo(
               interrupt ->
                   CommandScheduler.getInstance()
-                      .schedule(new HopperCommand(hopper, HopperCommand.Position.SHOOT_EXTEND)));
+                      .schedule(
+                          new HopperCommand(
+                              hopper, HopperCommand.Position.SHOOT_EXTEND, isExtended)));
 
   public RobotContainer() {
     configureBindings();
@@ -52,8 +55,8 @@ public class RobotContainer {
             controller::getLeftY,
             controller::getRightX));
     // Flywheel
-//    flywheel.setDefaultCommand(
-//        new FlywheelCommand(flywheel, FlywheelCommand.Position.DEFAULT_SHOT, drivetrain));
+    //    flywheel.setDefaultCommand(
+    //        new FlywheelCommand(flywheel, FlywheelCommand.Position.DEFAULT_SHOT, drivetrain));
 
     /* Controls */
     // Y = Shoot Toggle
@@ -66,10 +69,13 @@ public class RobotContainer {
     // Right Stick Down = Extend/Retract Hopper
     controller
         .rightStick()
-        .and(() -> !shootGroup.isScheduled())
+        // .and(() -> !shootGroup.isScheduled())
         .onTrue(
-            new HopperCommand(hopper, HopperCommand.Position.EXTEND_RETRACT)
-                .alongWith(Commands.runOnce(() -> System.out.println("Hopper Pressed"))));
+            Commands.runEnd(
+                    () -> hopper.move(Hopper.getRotation(isExtended)), () -> hopper.stop(), hopper)
+                .withDeadline(Commands.waitSeconds(2))
+                .andThen(Commands.runOnce(() -> isExtended = !isExtended)));
+
     //    // Right Trigger = Climb Retract
     //    controller
     //        .rightTrigger()
