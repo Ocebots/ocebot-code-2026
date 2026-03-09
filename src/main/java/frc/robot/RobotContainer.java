@@ -33,18 +33,20 @@ public class RobotContainer {
       Commands.parallel(
               new KickerCommand(kicker, KickerCommand.Position.INTAKE),
               Commands.runEnd(
-                  () -> hopper.slowMove(HopperConfig.HOPPER_RETRACT_ROTATION),
-                  () -> hopper.stop(),
-                  hopper).withDeadline(Commands.waitSeconds(2)),
+                      () -> hopper.slowMove(HopperConfig.HOPPER_RETRACT_ROTATION),
+                      () -> hopper.stop(),
+                      hopper)
+                  .withDeadline(Commands.waitSeconds(2)),
               new IntakeCommand(intake, IntakeCommand.Position.SLOW_INTAKE))
           .finallyDo(
               interrupt ->
                   CommandScheduler.getInstance()
                       .schedule(
                           Commands.runEnd(
-                              () -> hopper.move(HopperConfig.HOPPER_EXTEND_ROTATION),
-                              () -> hopper.stop(),
-                              hopper).withDeadline(Commands.waitSeconds(2))));
+                                  () -> hopper.move(HopperConfig.HOPPER_EXTEND_ROTATION),
+                                  () -> hopper.stop(),
+                                  hopper)
+                              .withDeadline(Commands.waitSeconds(2))));
 
   public RobotContainer() {
     configureBindings();
@@ -74,9 +76,9 @@ public class RobotContainer {
         .toggleOnTrue(new IntakeCommand(intake, IntakeCommand.Position.INTAKE));
 
     controller
-            .povRight()
-            .and(() -> !shootGroup.isScheduled())
-            .toggleOnTrue(new IntakeCommand(intake, IntakeCommand.Position.OUTTAKE));
+        .povRight()
+        .and(() -> !shootGroup.isScheduled())
+        .toggleOnTrue(new IntakeCommand(intake, IntakeCommand.Position.OUTTAKE));
     // Right Stick Down = Extend/Retract Hopper
     controller
         .rightStick()
