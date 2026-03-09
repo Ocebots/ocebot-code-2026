@@ -6,7 +6,13 @@ package frc.robot;
 
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.FollowPathCommand;
+
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -26,6 +32,7 @@ public class RobotContainer {
   private Kicker kicker = new Kicker();
   private CommandXboxController controller = new CommandXboxController(0);
   private SwerveDriveState driveState = new SwerveDriveState();
+  private final SendableChooser<Command> autoChooser;
 
   private Command shootGroup =
       Commands.parallel(
@@ -38,7 +45,12 @@ public class RobotContainer {
                       .schedule(new HopperCommand(hopper, HopperCommand.Position.SHOOT_EXTEND)));
 
   public RobotContainer() {
+    autoChooser = AutoBuilder.buildAutoChooser("Test");    
+    SmartDashboard.putData("Auto Mode", autoChooser);
+
     configureBindings();
+
+    CommandScheduler.getInstance().schedule(FollowPathCommand.warmupCommand());
   }
 
   private void configureBindings() {
@@ -95,9 +107,7 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    // Not finished yet
-    // Placeholder
-    return Commands.print("No autonomous command configured");
+    return autoChooser.getSelected();
   }
 
   public static void zeroPigeon() {
