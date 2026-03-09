@@ -69,7 +69,7 @@ public class RobotContainer {
     // Right Stick Down = Extend/Retract Hopper
     controller
         .rightStick()
-        // .and(() -> !shootGroup.isScheduled())
+        .and(() -> !shootGroup.isScheduled())
         .onTrue(
             Commands.runEnd(
                     () -> hopper.move(Hopper.getRotation(isExtended)), () -> hopper.stop(), hopper)
