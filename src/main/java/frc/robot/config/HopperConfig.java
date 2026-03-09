@@ -15,7 +15,7 @@ public class HopperConfig {
   public static final double HOPPER_V = 0;
   public static final double HOPPER_A = 0;
 
-  public static final double SLOW_HOPPER_P = 2;
+  public static final double SLOW_HOPPER_P = 1;
   public static final double SLOW_HOPPER_I = 0;
   public static final double SLOW_HOPPER_D = 0;
 
