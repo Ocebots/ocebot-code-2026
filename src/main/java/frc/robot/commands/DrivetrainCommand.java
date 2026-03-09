@@ -70,16 +70,14 @@ public class DrivetrainCommand extends Command {
 
       // Default driving mode
       case TELEOP:
-        subsystem.applyRequest(
-            () ->
-                drive
-                    .withVelocityX(
-                        -leftY.getAsDouble() * MaxSpeed) // Drive forward with negative Y (forward)
-                    .withVelocityY(-leftX.getAsDouble() * MaxSpeed) // Drive left with negative X
-                    .withRotationalRate(
-                        -rightX.getAsDouble()
-                            * MaxAngularRate)); // Drive counterclockwise with negative X
-        //        System.out.println("Drivetrain: Teleop");
+        subsystem.setControl(
+            drive
+                .withVelocityX(
+                    -leftY.getAsDouble() * MaxSpeed) // Drive forward with negative Y (forward)
+                .withVelocityY(-leftX.getAsDouble() * MaxSpeed) // Drive left with negative X
+                .withRotationalRate(
+                    -rightX.getAsDouble()
+                        * MaxAngularRate)); // Drive counterclockwise with negative X
         break;
 
       // (Needs check) Mode for when shots are from a still position
@@ -87,7 +85,6 @@ public class DrivetrainCommand extends Command {
         // make X with wheels, set wheels to brake mode
         applyRequest.ModuleStates = states;
         subsystem.setControl(applyRequest);
-        subsystem.setControl(brakeRequest);
         System.out.println("Drivetrain: Still Shot Configuration");
         break;
 

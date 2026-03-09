@@ -33,6 +33,9 @@ public class Hopper extends SubsystemBase {
     hopperConfig.Slot0.kP = HopperConfig.HOPPER_P;
     hopperConfig.Slot0.kI = HopperConfig.HOPPER_I;
     hopperConfig.Slot0.kD = HopperConfig.HOPPER_D;
+    hopperConfig.Slot0.kS = HopperConfig.HOPPER_S;
+    hopperConfig.Slot0.kV = HopperConfig.HOPPER_V;
+    hopperConfig.Slot0.kA = HopperConfig.HOPPER_A;
 
     hopperConfig.Slot1.kP = HopperConfig.SLOW_HOPPER_P;
     hopperConfig.Slot1.kI = HopperConfig.SLOW_HOPPER_I;
@@ -56,12 +59,12 @@ public class Hopper extends SubsystemBase {
   }
 
   public void extendDirectional(double speed) {
-    speed = Math.abs(-speed);
+    speed = Math.abs(speed);
     hopper.setControl(new DutyCycleOut(speed));
   }
 
   public void retractDirectional(double speed) {
-    speed = Math.abs(speed);
+    speed = Math.abs(-speed);
     hopper.setControl(new DutyCycleOut(speed));
   }
 
@@ -78,7 +81,7 @@ public class Hopper extends SubsystemBase {
         <= HopperConfig.HOPPER_TOLERANCE);
   }
 
-  public boolean extended() {
+  public boolean isExtended1() {
     return (Math.abs(hopper.getPosition().getValueAsDouble() - HopperConfig.HOPPER_EXTEND_ROTATION)
         <= HopperConfig.HOPPER_TOLERANCE);
   }
@@ -86,5 +89,29 @@ public class Hopper extends SubsystemBase {
   public boolean retracted() {
     return (Math.abs(hopper.getPosition().getValueAsDouble() - HopperConfig.HOPPER_RETRACT_ROTATION)
         <= HopperConfig.HOPPER_TOLERANCE);
+  }
+
+  private boolean extended = false;
+
+  public boolean isExtended() {
+    return this.extended;
+  }
+
+  public static double getRotation(boolean isExtended) {
+    if (isExtended) {
+      return HopperConfig.HOPPER_RETRACT_ROTATION;
+    } else {
+      return HopperConfig.HOPPER_EXTEND_ROTATION;
+    }
+  }
+
+  public void toggleExtend() {
+    if (extended) {
+      move(HopperConfig.HOPPER_RETRACT_ROTATION);
+      extended = false;
+    } else {
+      move(HopperConfig.HOPPER_EXTEND_ROTATION);
+      extended = true;
+    }
   }
 }

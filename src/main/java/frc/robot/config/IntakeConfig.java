@@ -6,7 +6,7 @@ public class IntakeConfig {
   public static final double INTAKE_GEAR_RATIO = 1;
 
   // Set
-  public static final double INTAKE_INTAKE_SPEED = 0;
-  public static final double INTAKE_OUTTAKE_SPEED = 0;
+  public static final double INTAKE_INTAKE_SPEED = 4;
+  public static final double INTAKE_OUTTAKE_SPEED = 4;
   public static final double INTAKE_SLOW_SPEED = 0;
 }
