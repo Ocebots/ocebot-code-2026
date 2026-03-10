@@ -5,15 +5,58 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "1 Outpost side center"
+            "name": "hopper deploy"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "idle"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "intake"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "1 Outpost side center"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "idle"
           }
         },
         {
           "type": "path",
           "data": {
             "pathName": "2 center to trench outpost"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot long"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "idle"
           }
         }
       ]

@@ -7,10 +7,9 @@ package frc.robot;
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.FollowPathCommand;
-
 import edu.wpi.first.epilogue.Logged;
-import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -40,21 +39,54 @@ public class RobotContainer {
       Commands.parallel(
               new KickerCommand(kicker, KickerCommand.Position.INTAKE),
               Commands.runEnd(
-                  () -> hopper.slowMove(HopperConfig.HOPPER_RETRACT_ROTATION),
-                  () -> hopper.stop(),
-                  hopper).withDeadline(Commands.waitSeconds(2)),
+                      () -> hopper.slowMove(HopperConfig.HOPPER_RETRACT_ROTATION),
+                      () -> hopper.stop(),
+                      hopper)
+                  .withDeadline(Commands.waitSeconds(2)),
               new IntakeCommand(intake, IntakeCommand.Position.SLOW_INTAKE))
           .finallyDo(
               interrupt ->
                   CommandScheduler.getInstance()
                       .schedule(
                           Commands.runEnd(
-                              () -> hopper.move(HopperConfig.HOPPER_EXTEND_ROTATION),
-                              () -> hopper.stop(),
-                              hopper).withDeadline(Commands.waitSeconds(2))));
+                                  () -> hopper.move(HopperConfig.HOPPER_EXTEND_ROTATION),
+                                  () -> hopper.stop(),
+                                  hopper)
+                              .withDeadline(Commands.waitSeconds(2))));
 
   public RobotContainer() {
-    autoChooser = AutoBuilder.buildAutoChooser("Test");    
+    NamedCommands.registerCommand(
+        "idle",
+        Commands.runOnce(() -> hopper.stop(), hopper)
+            .alongWith(Commands.runOnce(() -> intake.stop(), intake))
+            .alongWith(Commands.runOnce(() -> kicker.stop(), kicker)));
+
+    NamedCommands.registerCommand(
+        "hopper deploy",
+        Commands.runEnd(
+                () -> hopper.move(HopperConfig.HOPPER_EXTEND_ROTATION), () -> hopper.stop(), hopper)
+            .alongWith(Commands.run(() -> System.out.println("Hopper Deployed")))
+            .withDeadline(Commands.waitSeconds(2)));
+
+    NamedCommands.registerCommand(
+        "intake",
+        new IntakeCommand(intake, IntakeCommand.Position.INTAKE)
+            .withDeadline(Commands.waitSeconds(8)));
+
+    NamedCommands.registerCommand(
+        "shoot long",
+        Commands.parallel(
+                new KickerCommand(kicker, KickerCommand.Position.INTAKE),
+                Commands.runEnd(
+                        () -> hopper.slowMove(HopperConfig.HOPPER_RETRACT_ROTATION),
+                        () -> hopper.stop(),
+                        hopper)
+                    .withDeadline(Commands.waitSeconds(2)),
+                new IntakeCommand(intake, IntakeCommand.Position.SLOW_INTAKE),
+                new FlywheelCommand(flywheel, FlywheelCommand.Position.TRENCH_SHOT, drivetrain))
+            .withDeadline(Commands.waitSeconds(8)));
+
+    autoChooser = AutoBuilder.buildAutoChooser("Test");
     SmartDashboard.putData("Auto Mode", autoChooser);
 
     configureBindings();
@@ -86,9 +118,9 @@ public class RobotContainer {
         .toggleOnTrue(new IntakeCommand(intake, IntakeCommand.Position.INTAKE));
 
     controller
-            .povRight()
-            .and(() -> !shootGroup.isScheduled())
-            .toggleOnTrue(new IntakeCommand(intake, IntakeCommand.Position.OUTTAKE));
+        .povRight()
+        .and(() -> !shootGroup.isScheduled())
+        .toggleOnTrue(new IntakeCommand(intake, IntakeCommand.Position.OUTTAKE));
     // Right Stick Down = Extend/Retract Hopper
     controller
         .rightStick()

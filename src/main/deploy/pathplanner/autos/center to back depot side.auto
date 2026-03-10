@@ -5,15 +5,58 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "1 Depot side center"
+            "name": "hopper deploy"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "idle"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "intake"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "1 Depot side center"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "idle"
           }
         },
         {
           "type": "path",
           "data": {
             "pathName": "2 Center back depot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot long"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "idle"
           }
         }
       ]
