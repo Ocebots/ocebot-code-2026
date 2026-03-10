@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.*;
 import frc.robot.config.CANMappings;
+import frc.robot.config.HopperConfig;
 import frc.robot.config.TunerConstants;
 import frc.robot.subsystems.*;
 
@@ -30,19 +31,27 @@ public class RobotContainer {
   private Climb climb = new Climb();
   private Intake intake = new Intake();
   private Kicker kicker = new Kicker();
-  private CommandXboxController controller = new CommandXboxController(0);
+  private CommandXboxController controller = new CommandXboxController(1);
   private SwerveDriveState driveState = new SwerveDriveState();
   private final SendableChooser<Command> autoChooser;
+  public static boolean isExtended = false;
 
   private Command shootGroup =
       Commands.parallel(
               new KickerCommand(kicker, KickerCommand.Position.INTAKE),
-              new HopperCommand(hopper, HopperCommand.Position.SHOOT_RETRACT),
+              Commands.runEnd(
+                  () -> hopper.slowMove(HopperConfig.HOPPER_RETRACT_ROTATION),
+                  () -> hopper.stop(),
+                  hopper).withDeadline(Commands.waitSeconds(2)),
               new IntakeCommand(intake, IntakeCommand.Position.SLOW_INTAKE))
           .finallyDo(
               interrupt ->
                   CommandScheduler.getInstance()
-                      .schedule(new HopperCommand(hopper, HopperCommand.Position.SHOOT_EXTEND)));
+                      .schedule(
+                          Commands.runEnd(
+                              () -> hopper.move(HopperConfig.HOPPER_EXTEND_ROTATION),
+                              () -> hopper.stop(),
+                              hopper).withDeadline(Commands.waitSeconds(2))));
 
   public RobotContainer() {
     autoChooser = AutoBuilder.buildAutoChooser("Test");    
@@ -75,12 +84,22 @@ public class RobotContainer {
         .x()
         .and(() -> !shootGroup.isScheduled())
         .toggleOnTrue(new IntakeCommand(intake, IntakeCommand.Position.INTAKE));
+
+    controller
+            .povRight()
+            .and(() -> !shootGroup.isScheduled())
+            .toggleOnTrue(new IntakeCommand(intake, IntakeCommand.Position.OUTTAKE));
     // Right Stick Down = Extend/Retract Hopper
     controller
         .rightStick()
         .and(() -> !shootGroup.isScheduled())
-        .onTrue(new HopperCommand(hopper, HopperCommand.Position.EXTEND_RETRACT));
-    // Right Trigger = Climb Retract
+        .onTrue(
+            Commands.runEnd(
+                    () -> hopper.move(Hopper.getRotation(isExtended)), () -> hopper.stop(), hopper)
+                .withDeadline(Commands.waitSeconds(2))
+                .andThen(Commands.runOnce(() -> isExtended = !isExtended)));
+
+    //    // Right Trigger = Climb Retract
     controller
         .rightTrigger()
         .whileTrue(new ClimbCommand(climb, ClimbCommand.Position.DIRECTIONAL_CLIMB));
@@ -104,6 +123,7 @@ public class RobotContainer {
         .a()
         .toggleOnTrue(
             new FlywheelCommand(flywheel, FlywheelCommand.Position.CALCULATED_SHOT, drivetrain));
+    controller.povDown().onTrue(Commands.runOnce(() -> hopper.zero(), hopper));
   }
 
   public Command getAutonomousCommand() {

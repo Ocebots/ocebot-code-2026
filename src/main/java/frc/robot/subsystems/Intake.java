@@ -1,7 +1,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -31,12 +31,12 @@ public class Intake extends SubsystemBase {
 
   public void intake(double speed) {
     speed = -Math.abs(speed);
-    intake.setControl(new DutyCycleOut(speed));
+    intake.setControl(new VoltageOut(-speed));
   }
 
   public void outtake(double speed) {
     speed = Math.abs(speed);
-    intake.setControl(new DutyCycleOut(speed));
+    intake.setControl(new VoltageOut(speed));
   }
 
   public void stop() {
