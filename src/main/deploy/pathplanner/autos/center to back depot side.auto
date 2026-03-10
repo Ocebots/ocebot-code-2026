@@ -1,0 +1,68 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "hopper deploy"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "idle"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "intake"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "1 Depot side center"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "idle"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "2 Center back depot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot long"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "idle"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}

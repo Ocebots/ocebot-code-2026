@@ -12,6 +12,7 @@ public class FlywheelCommand extends Command {
   public static enum Position {
     HUB_SHOT,
     TOWER_SHOT,
+    TRENCH_SHOT,
     CALCULATED_SHOT,
     DEFAULT_SHOT,
     OUTTAKE
@@ -42,6 +43,11 @@ public class FlywheelCommand extends Command {
       case TOWER_SHOT:
         subsystem.shoot(FlywheelConfig.FLYWHEEL_TOWER_SHOT_SPEED);
         //         System.out.println("Flywheel: Tower Shot");
+        break;
+
+      case TRENCH_SHOT:
+        subsystem.shoot(FlywheelConfig.FLYWHEEL_TRENCH_SHOT_SPEED);
+        System.out.println("Flywheel: Trench Shot");
         break;
 
       // Spins flywheels at estimated speed given distance from hub
