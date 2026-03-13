@@ -26,20 +26,21 @@ public class IntakeCommand extends Command {
   @Override
   public void initialize() {
     switch (pose) {
-      // Runs intakeDutyCycleOut
+      // Runs intake
       case INTAKE:
         subsystem.intake(IntakeConfig.INTAKE_INTAKE_SPEED);
-        System.out.println("Intake: Intaking");
+//        System.out.println("Intake: Intaking");
         break;
 
-      // Runs intakeDutyCycleOut in outtaking direction
+      // Runs intake in outtaking direction
       case OUTTAKE:
         subsystem.outtake(IntakeConfig.INTAKE_OUTTAKE_SPEED);
         break;
 
-      // Slow intakeDutyCycleOut for shooting
+      // Slow intake for shooting
       case SLOW_INTAKE:
         subsystem.intake(IntakeConfig.INTAKE_SLOW_SPEED);
+//        System.out.println("Intake: run for shooting");
         break;
 
       default:

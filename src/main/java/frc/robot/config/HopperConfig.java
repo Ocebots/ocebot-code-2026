@@ -6,16 +6,16 @@ public class HopperConfig {
   public static final double HOPPER_GEAR_RATIO = 1;
 
   // Set
-  public static final double HOPPER_MAX_CRUISE_VELOCITY = 3000;
+  public static final double HOPPER_MAX_CRUISE_VELOCITY = 500;
   public static final double HOPPER_TARGET_ACCELERATION = 500;
-  public static final double HOPPER_P = 1.5;
+  public static final double HOPPER_P = 1.25;
   public static final double HOPPER_I = 0;
   public static final double HOPPER_D = 0;
   public static final double HOPPER_S = 0;
   public static final double HOPPER_V = 0;
   public static final double HOPPER_A = 0;
 
-  public static final double SLOW_HOPPER_P = 1;
+  public static final double SLOW_HOPPER_P = 1.25;
   public static final double SLOW_HOPPER_I = 0;
   public static final double SLOW_HOPPER_D = 0;
 

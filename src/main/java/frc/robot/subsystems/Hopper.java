@@ -70,6 +70,7 @@ public class Hopper extends SubsystemBase {
 
   public void stop() {
     hopper.stopMotor();
+    System.out.println("Hopper: Stopped");
   }
 
   public void zero() {
@@ -108,9 +109,11 @@ public class Hopper extends SubsystemBase {
   public void toggleExtend() {
     if (extended) {
       move(HopperConfig.HOPPER_RETRACT_ROTATION);
+      System.out.println("Hopper: retracting");
       extended = false;
     } else {
       move(HopperConfig.HOPPER_EXTEND_ROTATION);
+      System.out.println("Hopper: extending");
       extended = true;
     }
   }

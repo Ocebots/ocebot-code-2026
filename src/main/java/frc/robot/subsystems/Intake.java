@@ -32,13 +32,13 @@ public class Intake extends SubsystemBase {
   }
 
   public void intake(double speed) {
-    speed = -Math.abs(speed);
-    intake.setControl(new VoltageOut(-speed));
+    speed = Math.abs(speed);
+    intake.setControl(new VoltageOut(speed));
   }
 
   public void outtake(double speed) {
     speed = Math.abs(speed);
-    intake.setControl(new VoltageOut(speed));
+    intake.setControl(new VoltageOut(-speed));
   }
 
   public void stop() {

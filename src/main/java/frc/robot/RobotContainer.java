@@ -38,13 +38,7 @@ public class RobotContainer {
 
   private Command shootGroup =
       Commands.parallel(
-              new KickerCommand(kicker, KickerCommand.Position.INTAKE),
-              Commands.runEnd(
-                      () -> hopper.slowMove(HopperConfig.HOPPER_RETRACT_ROTATION),
-                      () -> hopper.stop(),
-                      hopper)
-                  .withDeadline(Commands.waitSeconds(2)),
-              new IntakeCommand(intake, IntakeCommand.Position.SLOW_INTAKE))
+              new KickerCommand(kicker, KickerCommand.Position.INTAKE))
           .finallyDo(
               interrupt ->
                   CommandScheduler.getInstance()
@@ -54,6 +48,17 @@ public class RobotContainer {
                                   () -> hopper.stop(),
                                   hopper)
                               .withDeadline(Commands.waitSeconds(2))));
+  private Command hopperShoot = Commands.repeatingSequence(
+          Commands.runEnd(
+                          () -> hopper.slowMove(HopperConfig.HOPPER_RETRACT_ROTATION),
+                          () -> hopper.stop(),
+                          hopper)
+                  .withDeadline(Commands.waitSeconds(.75)),
+          Commands.runEnd(
+                          () -> hopper.slowMove(HopperConfig.HOPPER_EXTEND_ROTATION),
+                          () -> hopper.stop(),
+                          hopper)
+                  .withDeadline(Commands.waitSeconds(.75)));
 
   public RobotContainer() {
 
@@ -115,23 +120,25 @@ public class RobotContainer {
             controller::getLeftX,
             controller::getLeftY,
             controller::getRightX));
-    // Flywheel
-    flywheel.setDefaultCommand(
-        new FlywheelCommand(flywheel, FlywheelCommand.Position.DEFAULT_SHOT, drivetrain));
 
     /* Controls */
     // Y = Shoot Toggle
-    controller.y().toggleOnTrue(shootGroup);
+    controller.y().toggleOnTrue(shootGroup.alongWith(hopperShoot).alongWith(new IntakeCommand(intake, IntakeCommand.Position.SLOW_INTAKE)));
     // X = Intake Toggle
     controller
         .x()
         .and(() -> !shootGroup.isScheduled())
         .toggleOnTrue(new IntakeCommand(intake, IntakeCommand.Position.INTAKE));
-
+    // Left Plus = Kicker Outtake Toggle
     controller
-        .povRight()
-        .and(() -> !shootGroup.isScheduled())
-        .toggleOnTrue(new IntakeCommand(intake, IntakeCommand.Position.OUTTAKE));
+            .povLeft()
+            .and(() -> !shootGroup.isScheduled())
+            .toggleOnTrue(new KickerCommand(kicker, KickerCommand.Position.OUTTAKE));
+    // Right Plus = Intake Outtake Toggle
+    controller
+            .povRight()
+            .and(() -> !shootGroup.isScheduled())
+            .toggleOnTrue(new IntakeCommand(intake, IntakeCommand.Position.OUTTAKE));
     // Right Stick Down = Extend/Retract Hopper
     controller
         .rightStick()
@@ -141,31 +148,23 @@ public class RobotContainer {
                     () -> hopper.move(Hopper.getRotation(isExtended)), () -> hopper.stop(), hopper)
                 .withDeadline(Commands.waitSeconds(2))
                 .andThen(Commands.runOnce(() -> isExtended = !isExtended)));
-
-    //    // Right Trigger = Climb Retract
-    controller
-        .rightTrigger()
-        .whileTrue(new ClimbCommand(climb, ClimbCommand.Position.DIRECTIONAL_CLIMB));
-    // Left Trigger = Climb Extend
-    controller
-        .leftTrigger()
-        .whileTrue(new ClimbCommand(climb, ClimbCommand.Position.DIRECTIONAL_UNCLIMB));
-    // Back button = Zero Pigeon gyro
+    // Back button = Zero Pigeon
     controller.back().onTrue(Commands.runOnce(() -> zeroPigeon()));
-    // Left Bumper = Flywheel Toggle for hub shot speeds
-    controller
-        .leftBumper()
-        .toggleOnTrue(new FlywheelCommand(flywheel, FlywheelCommand.Position.HUB_SHOT, drivetrain));
-    // Right Bumper = Flywheel Toggle for tower shot speeds
+    // Right Bumper = Flywheel Toggle for hub shot speeds
     controller
         .rightBumper()
+        .toggleOnTrue(new FlywheelCommand(flywheel, FlywheelCommand.Position.HUB_SHOT, drivetrain));
+    // Left Bumper = Flywheel Toggle for tower shot speeds
+    controller
+        .leftBumper()
         .toggleOnTrue(
             new FlywheelCommand(flywheel, FlywheelCommand.Position.TOWER_SHOT, drivetrain));
-    // A = Flywheel Toggle of calculated shots
+    // Left Trigger = Flywheel Toggle for trench shot speeds
     controller
-        .a()
+        .leftTrigger()
         .toggleOnTrue(
-            new FlywheelCommand(flywheel, FlywheelCommand.Position.CALCULATED_SHOT, drivetrain));
+            new FlywheelCommand(flywheel, FlywheelCommand.Position.TRENCH_SHOT, drivetrain));
+    // Down Plus = Zero hopper
     controller.povDown().onTrue(Commands.runOnce(() -> hopper.zero(), hopper));
   }
 
