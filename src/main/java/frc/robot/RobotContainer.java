@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.*;
 import frc.robot.config.CANMappings;
 import frc.robot.config.HopperConfig;
+import frc.robot.config.IntakeConfig;
 import frc.robot.config.TunerConstants;
 import frc.robot.subsystems.*;
 
@@ -55,6 +56,7 @@ public class RobotContainer {
                               .withDeadline(Commands.waitSeconds(2))));
 
   public RobotContainer() {
+
     NamedCommands.registerCommand(
         "idle",
         Commands.runOnce(() -> hopper.stop(), hopper)
@@ -66,22 +68,31 @@ public class RobotContainer {
         Commands.runEnd(
                 () -> hopper.move(HopperConfig.HOPPER_EXTEND_ROTATION), () -> hopper.stop(), hopper)
             .alongWith(Commands.run(() -> System.out.println("Hopper Deployed")))
+            .withDeadline(Commands.waitSeconds(1)));
+
+    NamedCommands.registerCommand(
+        "hopper retract",
+        Commands.runEnd(
+                () -> hopper.move(HopperConfig.HOPPER_RETRACT_ROTATION),
+                () -> hopper.stop(),
+                hopper)
+            .alongWith(Commands.run(() -> System.out.println("Hopper Retracted")))
             .withDeadline(Commands.waitSeconds(2)));
 
     NamedCommands.registerCommand(
         "intake",
-        new IntakeCommand(intake, IntakeCommand.Position.INTAKE)
-            .withDeadline(Commands.waitSeconds(8)));
+        Commands.run(() -> intake.intake(IntakeConfig.INTAKE_INTAKE_SPEED), intake)
+            .alongWith(Commands.run(() -> System.out.println("Intaking"))));
+
+    NamedCommands.registerCommand(
+        "rev shooter",
+        new FlywheelCommand(flywheel, FlywheelCommand.Position.TRENCH_SHOT, drivetrain)
+            .withDeadline(Commands.waitSeconds(1)));
 
     NamedCommands.registerCommand(
         "shoot long",
         Commands.parallel(
                 new KickerCommand(kicker, KickerCommand.Position.INTAKE),
-                Commands.runEnd(
-                        () -> hopper.slowMove(HopperConfig.HOPPER_RETRACT_ROTATION),
-                        () -> hopper.stop(),
-                        hopper)
-                    .withDeadline(Commands.waitSeconds(2)),
                 new IntakeCommand(intake, IntakeCommand.Position.SLOW_INTAKE),
                 new FlywheelCommand(flywheel, FlywheelCommand.Position.TRENCH_SHOT, drivetrain))
             .withDeadline(Commands.waitSeconds(8)));

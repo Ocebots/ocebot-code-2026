@@ -17,28 +17,22 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "deadline",
           "data": {
             "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "intake"
-                }
-              },
               {
                 "type": "path",
                 "data": {
                   "pathName": "1 Outpost side center"
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "intake"
+                }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "idle"
           }
         },
         {
@@ -50,13 +44,26 @@
         {
           "type": "named",
           "data": {
-            "name": "shoot long"
+            "name": "rev shooter"
           }
         },
         {
-          "type": "named",
+          "type": "parallel",
           "data": {
-            "name": "idle"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "hopper retract"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "shoot long"
+                }
+              }
+            ]
           }
         }
       ]
