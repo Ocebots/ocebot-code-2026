@@ -65,6 +65,18 @@
               }
             ]
           }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "idle"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "3 to middle outpost"
+          }
         }
       ]
     }
