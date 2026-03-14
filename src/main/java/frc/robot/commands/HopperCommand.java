@@ -30,7 +30,8 @@ public class HopperCommand extends Command {
   public void initialize() {
     switch (pose) {
 
-      // (Needs check) If hopper already extended, retract, and if hopper retracted, extend
+      // (Needs check) If hopper already extended, retract, and if hopper isRetractedByPosition,
+      // extend
       case EXTEND_RETRACT:
         if (isExtended) {
           System.out.println("Hopper: Retracting");

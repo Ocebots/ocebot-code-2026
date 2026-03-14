@@ -37,8 +37,7 @@ public class RobotContainer {
   public static boolean isExtended = false;
 
   private Command shootGroup =
-      Commands.parallel(
-              new KickerCommand(kicker, KickerCommand.Position.INTAKE))
+      Commands.parallel(new KickerCommand(kicker, KickerCommand.Position.INTAKE))
           .finallyDo(
               interrupt ->
                   CommandScheduler.getInstance()
@@ -48,17 +47,18 @@ public class RobotContainer {
                                   () -> hopper.stop(),
                                   hopper)
                               .withDeadline(Commands.waitSeconds(2))));
-  private Command hopperShoot = Commands.repeatingSequence(
+  private Command hopperShoot =
+      Commands.repeatingSequence(
           Commands.runEnd(
-                          () -> hopper.slowMove(HopperConfig.HOPPER_RETRACT_ROTATION),
-                          () -> hopper.stop(),
-                          hopper)
-                  .withDeadline(Commands.waitSeconds(.75)),
+                  () -> hopper.slowMove(HopperConfig.HOPPER_RETRACT_ROTATION),
+                  () -> hopper.stop(),
+                  hopper)
+              .withDeadline(Commands.waitSeconds(.75)),
           Commands.runEnd(
-                          () -> hopper.slowMove(HopperConfig.HOPPER_EXTEND_ROTATION),
-                          () -> hopper.stop(),
-                          hopper)
-                  .withDeadline(Commands.waitSeconds(.75)));
+                  () -> hopper.slowMove(HopperConfig.HOPPER_EXTEND_ROTATION),
+                  () -> hopper.stop(),
+                  hopper)
+              .withDeadline(Commands.waitSeconds(.75)));
 
   public RobotContainer() {
 
@@ -123,7 +123,12 @@ public class RobotContainer {
 
     /* Controls */
     // Y = Shoot Toggle
-    controller.y().toggleOnTrue(shootGroup.alongWith(hopperShoot).alongWith(new IntakeCommand(intake, IntakeCommand.Position.SLOW_INTAKE)));
+    controller
+        .y()
+        .toggleOnTrue(
+            shootGroup
+                .alongWith(hopperShoot)
+                .alongWith(new IntakeCommand(intake, IntakeCommand.Position.SLOW_INTAKE)));
     // X = Intake Toggle
     controller
         .x()
@@ -131,14 +136,14 @@ public class RobotContainer {
         .toggleOnTrue(new IntakeCommand(intake, IntakeCommand.Position.INTAKE));
     // Left Plus = Kicker Outtake Toggle
     controller
-            .povLeft()
-            .and(() -> !shootGroup.isScheduled())
-            .toggleOnTrue(new KickerCommand(kicker, KickerCommand.Position.OUTTAKE));
+        .povLeft()
+        .and(() -> !shootGroup.isScheduled())
+        .toggleOnTrue(new KickerCommand(kicker, KickerCommand.Position.OUTTAKE));
     // Right Plus = Intake Outtake Toggle
     controller
-            .povRight()
-            .and(() -> !shootGroup.isScheduled())
-            .toggleOnTrue(new IntakeCommand(intake, IntakeCommand.Position.OUTTAKE));
+        .povRight()
+        .and(() -> !shootGroup.isScheduled())
+        .toggleOnTrue(new IntakeCommand(intake, IntakeCommand.Position.OUTTAKE));
     // Right Stick Down = Extend/Retract Hopper
     controller
         .rightStick()

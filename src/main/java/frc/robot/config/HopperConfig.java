@@ -24,4 +24,5 @@ public class HopperConfig {
   // Set
   public static final double HOPPER_EXTEND_ROTATION = 4.1;
   public static final double HOPPER_RETRACT_ROTATION = 0.1;
+  public static final double HOPPER_RETRACT_FOR_NEUTRAL_MODE_ROTATION = 1;
 }

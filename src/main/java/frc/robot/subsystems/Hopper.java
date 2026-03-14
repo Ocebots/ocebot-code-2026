@@ -7,6 +7,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.config.CANMappings;
 import frc.robot.config.HopperConfig;
@@ -82,14 +83,14 @@ public class Hopper extends SubsystemBase {
         <= HopperConfig.HOPPER_TOLERANCE);
   }
 
-  public boolean isExtended1() {
+  public boolean isExtendedByPosition() {
     return (Math.abs(hopper.getPosition().getValueAsDouble() - HopperConfig.HOPPER_EXTEND_ROTATION)
         <= HopperConfig.HOPPER_TOLERANCE);
   }
 
-  public boolean retracted() {
-    return (Math.abs(hopper.getPosition().getValueAsDouble() - HopperConfig.HOPPER_RETRACT_ROTATION)
-        <= HopperConfig.HOPPER_TOLERANCE);
+  public boolean isRetractedByPosition() {
+    return (hopper.getPosition().getValueAsDouble()
+        < HopperConfig.HOPPER_RETRACT_FOR_NEUTRAL_MODE_ROTATION);
   }
 
   private boolean extended = false;
@@ -115,6 +116,17 @@ public class Hopper extends SubsystemBase {
       move(HopperConfig.HOPPER_EXTEND_ROTATION);
       System.out.println("Hopper: extending");
       extended = true;
+    }
+  }
+
+  @Override
+  public void periodic() {
+    if (DriverStation.isDisabled()) {
+      hopper.setNeutralMode(NeutralModeValue.Coast);
+    } else if (isRetractedByPosition()) {
+      hopper.setNeutralMode(NeutralModeValue.Brake);
+    } else {
+      hopper.setNeutralMode(NeutralModeValue.Coast);
     }
   }
 }
