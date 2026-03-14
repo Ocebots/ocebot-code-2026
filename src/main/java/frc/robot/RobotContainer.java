@@ -68,12 +68,7 @@ public class RobotContainer {
             .alongWith(Commands.runOnce(() -> intake.stop(), intake))
             .alongWith(Commands.runOnce(() -> kicker.stop(), kicker)));
 
-    NamedCommands.registerCommand(
-        "hopper deploy",
-        Commands.runEnd(
-                () -> hopper.move(HopperConfig.HOPPER_EXTEND_ROTATION), () -> hopper.stop(), hopper)
-            .alongWith(Commands.run(() -> System.out.println("Hopper Deployed")))
-            .withDeadline(Commands.waitSeconds(1)));
+    NamedCommands.registerCommand("hopper deploy", hopperShoot);
 
     NamedCommands.registerCommand(
         "hopper retract",
