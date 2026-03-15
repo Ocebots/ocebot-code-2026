@@ -30,8 +30,8 @@ public class FlywheelConfig {
   public static final double FLYWHEEL_LEFT_A = 0;
 
   // Set
-  public static final double FLYWHEEL_HUB_SHOT_SPEED = 40;
-  public static final double FLYWHEEL_TOWER_SHOT_SPEED = 66;
+  public static final double FLYWHEEL_HUB_SHOT_SPEED = 47;
+  public static final double FLYWHEEL_TOWER_SHOT_SPEED = 65;
   public static final double FLYWHEEL_TRENCH_SHOT_SPEED = 65;
 
   public static final double FLYWHEEL_OUTTAKE_SPEED = 0;

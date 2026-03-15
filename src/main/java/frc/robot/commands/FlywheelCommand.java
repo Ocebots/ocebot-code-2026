@@ -21,6 +21,7 @@ public class FlywheelCommand extends Command {
   private Flywheel subsystem;
   private Position pose;
   private CommandSwerveDrivetrain drivetrain;
+  public static String isOn = "";
 
   public FlywheelCommand(Flywheel subsystem, Position pose, CommandSwerveDrivetrain drivetrain) {
     this.pose = pose;
@@ -36,22 +37,29 @@ public class FlywheelCommand extends Command {
       // Spins flywheels at proper speed for shooting from hub
       case HUB_SHOT:
         subsystem.shoot(FlywheelConfig.FLYWHEEL_HUB_SHOT_SPEED);
+        isOn = "true";
         //                 System.out.println("Flywheel: Hub Shot");
         break;
 
       // Spins flywheels at proper speed for shooting from tower
       case TOWER_SHOT:
         subsystem.shoot(FlywheelConfig.FLYWHEEL_TOWER_SHOT_SPEED);
+        isOn = "true";
+
         //                 System.out.println("Flywheel: Tower Shot");
         break;
 
       case TRENCH_SHOT:
         subsystem.shoot(FlywheelConfig.FLYWHEEL_TRENCH_SHOT_SPEED);
+        isOn = "true";
+
         //        System.out.println("Flywheel: Trench Shot");
         break;
 
       // Spins flywheels at estimated speed given distance from hub
       case CALCULATED_SHOT:
+        isOn = "true";
+
         subsystem.shoot(
             ShotCalculator.calculateFlywheelShot(drivetrain.getState().Pose.getTranslation()));
         //         System.out.println("Flywheel: Calculated Shot");
@@ -81,6 +89,8 @@ public class FlywheelCommand extends Command {
   @Override
   public void end(boolean interrupted) {
     subsystem.stop();
+    isOn = "false";
+
   }
 
   @Override

@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import static frc.robot.RobotContainer.shooterState;
 import static frc.robot.config.VisionConfig.photonPoseEstimatorForward;
 import static frc.robot.config.VisionConfig.result;
 
@@ -12,8 +13,10 @@ import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.commands.FlywheelCommand;
 import frc.robot.config.TunerConstants;
 import frc.robot.config.VisionConfig;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -50,6 +53,8 @@ public class Robot extends TimedRobot {
               .toPose2d(),
           visionEst.get().timestampSeconds);
     }
+    SmartDashboard.putString("shoot-state", shooterState);
+    SmartDashboard.putString("shoot-on", FlywheelCommand.isOn);
   }
 
   @Override

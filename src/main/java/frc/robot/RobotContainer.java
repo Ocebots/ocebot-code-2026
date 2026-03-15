@@ -35,6 +35,7 @@ public class RobotContainer {
   private SwerveDriveState driveState = new SwerveDriveState();
   private final SendableChooser<Command> autoChooser;
   public static boolean isExtended = false;
+  public static String shooterState = "none";
 
   private Command shootGroup =
       Commands.parallel(new KickerCommand(kicker, KickerCommand.Position.INTAKE))
@@ -68,7 +69,12 @@ public class RobotContainer {
             .alongWith(Commands.runOnce(() -> intake.stop(), intake))
             .alongWith(Commands.runOnce(() -> kicker.stop(), kicker)));
 
-    NamedCommands.registerCommand("hopper deploy", hopperShoot);
+    NamedCommands.registerCommand(
+        "hopper deploy",
+        Commands.runEnd(
+                () -> hopper.move(HopperConfig.HOPPER_EXTEND_ROTATION), () -> hopper.stop(), hopper)
+            .alongWith(Commands.run(() -> System.out.println("Hopper Deployed")))
+            .withDeadline(Commands.waitSeconds(0.75)));
 
     NamedCommands.registerCommand(
         "hopper retract",
@@ -121,9 +127,12 @@ public class RobotContainer {
     controller
         .y()
         .toggleOnTrue(
-            shootGroup
-                .alongWith(hopperShoot)
-                .alongWith(new IntakeCommand(intake, IntakeCommand.Position.SLOW_INTAKE)));
+            new KickerCommand(kicker, KickerCommand.Position.OUTTAKE)
+                .withDeadline(Commands.waitSeconds(1))
+                .andThen(
+                    shootGroup
+                        .alongWith(hopperShoot)
+                        .alongWith(new IntakeCommand(intake, IntakeCommand.Position.SLOW_INTAKE))));
     // X = Intake Toggle
     controller
         .x()
@@ -153,17 +162,21 @@ public class RobotContainer {
     // Right Bumper = Flywheel Toggle for hub shot speeds
     controller
         .rightBumper()
-        .toggleOnTrue(new FlywheelCommand(flywheel, FlywheelCommand.Position.HUB_SHOT, drivetrain));
+        .toggleOnTrue(
+            new FlywheelCommand(flywheel, FlywheelCommand.Position.HUB_SHOT, drivetrain)
+                .alongWith(Commands.run(() -> shooterState="HUB")));
     // Left Bumper = Flywheel Toggle for tower shot speeds
     controller
         .leftBumper()
         .toggleOnTrue(
-            new FlywheelCommand(flywheel, FlywheelCommand.Position.TOWER_SHOT, drivetrain));
+            new FlywheelCommand(flywheel, FlywheelCommand.Position.TOWER_SHOT, drivetrain)
+                .alongWith(Commands.run(() -> shooterState="TOWER")));
     // Left Trigger = Flywheel Toggle for trench shot speeds
     controller
         .leftTrigger()
         .toggleOnTrue(
-            new FlywheelCommand(flywheel, FlywheelCommand.Position.TRENCH_SHOT, drivetrain));
+            new FlywheelCommand(flywheel, FlywheelCommand.Position.TRENCH_SHOT, drivetrain)
+                .alongWith(Commands.run(() -> shooterState="TRENCH")));
     // Down Plus = Zero hopper
     controller.povDown().onTrue(Commands.runOnce(() -> hopper.zero(), hopper));
   }

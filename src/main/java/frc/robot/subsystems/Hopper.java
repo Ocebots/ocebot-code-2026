@@ -44,7 +44,7 @@ public class Hopper extends SubsystemBase {
 
     hopperConfig.Feedback.SensorToMechanismRatio = HopperConfig.HOPPER_GEAR_RATIO;
 
-    hopperConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    hopperConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
     hopperConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
@@ -119,14 +119,14 @@ public class Hopper extends SubsystemBase {
     }
   }
 
-  @Override
-  public void periodic() {
-    if (DriverStation.isDisabled()) {
-      hopper.setNeutralMode(NeutralModeValue.Coast);
-    } else if (isRetractedByPosition()) {
-      hopper.setNeutralMode(NeutralModeValue.Brake);
-    } else {
-      hopper.setNeutralMode(NeutralModeValue.Coast);
-    }
-  }
+//    @Override
+//    public void periodic() {
+//      if (DriverStation.isDisabled()) {
+//        hopper.setNeutralMode(NeutralModeValue.Coast);
+//      } else if (isRetractedByPosition()) {
+//        hopper.setNeutralMode(NeutralModeValue.Brake);
+//      } else {
+//        hopper.setNeutralMode(NeutralModeValue.Coast);
+//      }
+//    }
 }
