@@ -90,7 +90,6 @@ public class FlywheelCommand extends Command {
   public void end(boolean interrupted) {
     subsystem.stop();
     isOn = "false";
-
   }
 
   @Override

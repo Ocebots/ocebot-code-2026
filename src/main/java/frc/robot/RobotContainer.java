@@ -164,19 +164,19 @@ public class RobotContainer {
         .rightBumper()
         .toggleOnTrue(
             new FlywheelCommand(flywheel, FlywheelCommand.Position.HUB_SHOT, drivetrain)
-                .alongWith(Commands.run(() -> shooterState="HUB")));
+                .alongWith(Commands.run(() -> shooterState = "HUB")));
     // Left Bumper = Flywheel Toggle for tower shot speeds
     controller
         .leftBumper()
         .toggleOnTrue(
             new FlywheelCommand(flywheel, FlywheelCommand.Position.TOWER_SHOT, drivetrain)
-                .alongWith(Commands.run(() -> shooterState="TOWER")));
+                .alongWith(Commands.run(() -> shooterState = "TOWER")));
     // Left Trigger = Flywheel Toggle for trench shot speeds
     controller
         .leftTrigger()
         .toggleOnTrue(
             new FlywheelCommand(flywheel, FlywheelCommand.Position.TRENCH_SHOT, drivetrain)
-                .alongWith(Commands.run(() -> shooterState="TRENCH")));
+                .alongWith(Commands.run(() -> shooterState = "TRENCH")));
     // Down Plus = Zero hopper
     controller.povDown().onTrue(Commands.runOnce(() -> hopper.zero(), hopper));
   }
