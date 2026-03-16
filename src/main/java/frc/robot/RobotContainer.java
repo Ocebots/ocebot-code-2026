@@ -127,12 +127,9 @@ public class RobotContainer {
     controller
         .y()
         .toggleOnTrue(
-            new KickerCommand(kicker, KickerCommand.Position.OUTTAKE)
-                .withDeadline(Commands.waitSeconds(1))
-                .andThen(
-                    shootGroup
-                        .alongWith(hopperShoot)
-                        .alongWith(new IntakeCommand(intake, IntakeCommand.Position.SLOW_INTAKE))));
+            (shootGroup
+                .alongWith(hopperShoot)
+                .alongWith(new IntakeCommand(intake, IntakeCommand.Position.SLOW_INTAKE))));
     // X = Intake Toggle
     controller
         .x()
@@ -179,6 +176,8 @@ public class RobotContainer {
                 .alongWith(Commands.run(() -> shooterState = "TRENCH")));
     // Down Plus = Zero hopper
     controller.povDown().onTrue(Commands.runOnce(() -> hopper.zero(), hopper));
+    // Up Plus = Defense Hopper
+    controller.povUp().toggleOnTrue(Commands.run(() -> hopper.retractDirectional(0.8), hopper));
   }
 
   public Command getAutonomousCommand() {

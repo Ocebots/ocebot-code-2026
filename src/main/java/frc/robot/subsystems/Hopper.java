@@ -1,8 +1,8 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -60,12 +60,12 @@ public class Hopper extends SubsystemBase {
 
   public void extendDirectional(double speed) {
     speed = Math.abs(speed);
-    hopper.setControl(new DutyCycleOut(speed));
+    hopper.setControl(new VoltageOut(-speed));
   }
 
   public void retractDirectional(double speed) {
-    speed = Math.abs(-speed);
-    hopper.setControl(new DutyCycleOut(speed));
+    speed = Math.abs(speed);
+    hopper.setControl(new VoltageOut(-speed));
   }
 
   public void stop() {
