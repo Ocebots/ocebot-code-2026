@@ -7,6 +7,7 @@ public class IntakeConfig {
 
   // Set
   public static final double INTAKE_INTAKE_SPEED = 4;
+
   public static final double INTAKE_OUTTAKE_SPEED = 4;
-  public static final double INTAKE_SLOW_SPEED = 0;
+  public static final double INTAKE_SLOW_SPEED = 3;
 }

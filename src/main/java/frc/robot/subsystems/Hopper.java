@@ -1,8 +1,8 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -43,7 +43,7 @@ public class Hopper extends SubsystemBase {
 
     hopperConfig.Feedback.SensorToMechanismRatio = HopperConfig.HOPPER_GEAR_RATIO;
 
-    hopperConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    hopperConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
     hopperConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
@@ -60,16 +60,17 @@ public class Hopper extends SubsystemBase {
 
   public void extendDirectional(double speed) {
     speed = Math.abs(speed);
-    hopper.setControl(new DutyCycleOut(speed));
+    hopper.setControl(new VoltageOut(-speed));
   }
 
   public void retractDirectional(double speed) {
-    speed = Math.abs(-speed);
-    hopper.setControl(new DutyCycleOut(speed));
+    speed = Math.abs(speed);
+    hopper.setControl(new VoltageOut(-speed));
   }
 
   public void stop() {
     hopper.stopMotor();
+    System.out.println("Hopper: Stopped");
   }
 
   public void zero() {
@@ -81,14 +82,14 @@ public class Hopper extends SubsystemBase {
         <= HopperConfig.HOPPER_TOLERANCE);
   }
 
-  public boolean isExtended1() {
+  public boolean isExtendedByPosition() {
     return (Math.abs(hopper.getPosition().getValueAsDouble() - HopperConfig.HOPPER_EXTEND_ROTATION)
         <= HopperConfig.HOPPER_TOLERANCE);
   }
 
-  public boolean retracted() {
-    return (Math.abs(hopper.getPosition().getValueAsDouble() - HopperConfig.HOPPER_RETRACT_ROTATION)
-        <= HopperConfig.HOPPER_TOLERANCE);
+  public boolean isRetractedByPosition() {
+    return (hopper.getPosition().getValueAsDouble()
+        < HopperConfig.HOPPER_RETRACT_FOR_NEUTRAL_MODE_ROTATION);
   }
 
   private boolean extended = false;
@@ -108,10 +109,23 @@ public class Hopper extends SubsystemBase {
   public void toggleExtend() {
     if (extended) {
       move(HopperConfig.HOPPER_RETRACT_ROTATION);
+      System.out.println("Hopper: retracting");
       extended = false;
     } else {
       move(HopperConfig.HOPPER_EXTEND_ROTATION);
+      System.out.println("Hopper: extending");
       extended = true;
     }
   }
+
+  //    @Override
+  //    public void periodic() {
+  //      if (DriverStation.isDisabled()) {
+  //        hopper.setNeutralMode(NeutralModeValue.Coast);
+  //      } else if (isRetractedByPosition()) {
+  //        hopper.setNeutralMode(NeutralModeValue.Brake);
+  //      } else {
+  //        hopper.setNeutralMode(NeutralModeValue.Coast);
+  //      }
+  //    }
 }

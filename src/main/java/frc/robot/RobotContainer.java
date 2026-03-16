@@ -6,7 +6,12 @@ package frc.robot;
 
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.FollowPathCommand;
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -14,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.*;
 import frc.robot.config.CANMappings;
 import frc.robot.config.HopperConfig;
+import frc.robot.config.IntakeConfig;
 import frc.robot.config.TunerConstants;
 import frc.robot.subsystems.*;
 
@@ -27,27 +33,82 @@ public class RobotContainer {
   private Kicker kicker = new Kicker();
   private CommandXboxController controller = new CommandXboxController(1);
   private SwerveDriveState driveState = new SwerveDriveState();
+  private final SendableChooser<Command> autoChooser;
   public static boolean isExtended = false;
+  public static String shooterState = "none";
 
   private Command shootGroup =
-      Commands.parallel(
-              new KickerCommand(kicker, KickerCommand.Position.INTAKE),
-              Commands.runEnd(
-                  () -> hopper.slowMove(HopperConfig.HOPPER_RETRACT_ROTATION),
-                  () -> hopper.stop(),
-                  hopper).withDeadline(Commands.waitSeconds(2)),
-              new IntakeCommand(intake, IntakeCommand.Position.SLOW_INTAKE))
+      Commands.parallel(new KickerCommand(kicker, KickerCommand.Position.INTAKE))
           .finallyDo(
               interrupt ->
                   CommandScheduler.getInstance()
                       .schedule(
                           Commands.runEnd(
-                              () -> hopper.move(HopperConfig.HOPPER_EXTEND_ROTATION),
-                              () -> hopper.stop(),
-                              hopper).withDeadline(Commands.waitSeconds(2))));
+                                  () -> hopper.move(HopperConfig.HOPPER_EXTEND_ROTATION),
+                                  () -> hopper.stop(),
+                                  hopper)
+                              .withDeadline(Commands.waitSeconds(2))));
+  private Command hopperShoot =
+      Commands.repeatingSequence(
+          Commands.runEnd(
+                  () -> hopper.slowMove(HopperConfig.HOPPER_RETRACT_ROTATION),
+                  () -> hopper.stop(),
+                  hopper)
+              .withDeadline(Commands.waitSeconds(.75)),
+          Commands.runEnd(
+                  () -> hopper.slowMove(HopperConfig.HOPPER_EXTEND_ROTATION),
+                  () -> hopper.stop(),
+                  hopper)
+              .withDeadline(Commands.waitSeconds(.75)));
 
   public RobotContainer() {
+
+    NamedCommands.registerCommand(
+        "idle",
+        Commands.runOnce(() -> hopper.stop(), hopper)
+            .alongWith(Commands.runOnce(() -> intake.stop(), intake))
+            .alongWith(Commands.runOnce(() -> kicker.stop(), kicker)));
+
+    NamedCommands.registerCommand(
+        "hopper deploy",
+        Commands.runEnd(
+                () -> hopper.move(HopperConfig.HOPPER_EXTEND_ROTATION), () -> hopper.stop(), hopper)
+            .alongWith(Commands.run(() -> System.out.println("Hopper Deployed")))
+            .withDeadline(Commands.waitSeconds(0.75)));
+
+    NamedCommands.registerCommand(
+        "hopper retract",
+        Commands.runEnd(
+                () -> hopper.move(HopperConfig.HOPPER_RETRACT_ROTATION),
+                () -> hopper.stop(),
+                hopper)
+            .alongWith(Commands.run(() -> System.out.println("Hopper Retracted")))
+            .withDeadline(Commands.waitSeconds(2)));
+
+    NamedCommands.registerCommand(
+        "intake",
+        Commands.run(() -> intake.intake(IntakeConfig.INTAKE_INTAKE_SPEED), intake)
+            .alongWith(Commands.run(() -> System.out.println("Intaking"))));
+
+    NamedCommands.registerCommand(
+        "rev shooter",
+        new FlywheelCommand(flywheel, FlywheelCommand.Position.TRENCH_SHOT, drivetrain)
+            .withDeadline(Commands.waitSeconds(1)));
+
+    NamedCommands.registerCommand(
+        "shoot long",
+        Commands.parallel(
+                new KickerCommand(kicker, KickerCommand.Position.INTAKE),
+                new IntakeCommand(intake, IntakeCommand.Position.SLOW_INTAKE),
+                new FlywheelCommand(flywheel, FlywheelCommand.Position.TRENCH_SHOT, drivetrain))
+            .withDeadline(Commands.waitSeconds(8)));
+
+    autoChooser = AutoBuilder.buildAutoChooser("Test");
+    SmartDashboard.putData("Auto Mode", autoChooser);
+
     configureBindings();
+
+    CommandScheduler.getInstance().schedule(FollowPathCommand.warmupCommand());
   }
 
   private void configureBindings() {
@@ -60,23 +121,30 @@ public class RobotContainer {
             controller::getLeftX,
             controller::getLeftY,
             controller::getRightX));
-    // Flywheel
-    flywheel.setDefaultCommand(
-        new FlywheelCommand(flywheel, FlywheelCommand.Position.DEFAULT_SHOT, drivetrain));
 
     /* Controls */
     // Y = Shoot Toggle
-    controller.y().toggleOnTrue(shootGroup);
+    controller
+        .y()
+        .toggleOnTrue(
+            (shootGroup
+                .alongWith(hopperShoot)
+                .alongWith(new IntakeCommand(intake, IntakeCommand.Position.SLOW_INTAKE))));
     // X = Intake Toggle
     controller
         .x()
         .and(() -> !shootGroup.isScheduled())
         .toggleOnTrue(new IntakeCommand(intake, IntakeCommand.Position.INTAKE));
-
+    // Left Plus = Kicker Outtake Toggle
     controller
-            .povRight()
-            .and(() -> !shootGroup.isScheduled())
-            .toggleOnTrue(new IntakeCommand(intake, IntakeCommand.Position.OUTTAKE));
+        .povLeft()
+        .and(() -> !shootGroup.isScheduled())
+        .toggleOnTrue(new KickerCommand(kicker, KickerCommand.Position.OUTTAKE));
+    // Right Plus = Intake Outtake Toggle
+    controller
+        .povRight()
+        .and(() -> !shootGroup.isScheduled())
+        .toggleOnTrue(new IntakeCommand(intake, IntakeCommand.Position.OUTTAKE));
     // Right Stick Down = Extend/Retract Hopper
     controller
         .rightStick()
@@ -86,38 +154,34 @@ public class RobotContainer {
                     () -> hopper.move(Hopper.getRotation(isExtended)), () -> hopper.stop(), hopper)
                 .withDeadline(Commands.waitSeconds(2))
                 .andThen(Commands.runOnce(() -> isExtended = !isExtended)));
-
-    //    // Right Trigger = Climb Retract
-    controller
-        .rightTrigger()
-        .whileTrue(new ClimbCommand(climb, ClimbCommand.Position.DIRECTIONAL_CLIMB));
-    // Left Trigger = Climb Extend
-    controller
-        .leftTrigger()
-        .whileTrue(new ClimbCommand(climb, ClimbCommand.Position.DIRECTIONAL_UNCLIMB));
-    // Back button = Zero Pigeon gyro
+    // Back button = Zero Pigeon
     controller.back().onTrue(Commands.runOnce(() -> zeroPigeon()));
-    // Left Bumper = Flywheel Toggle for hub shot speeds
-    controller
-        .leftBumper()
-        .toggleOnTrue(new FlywheelCommand(flywheel, FlywheelCommand.Position.HUB_SHOT, drivetrain));
-    // Right Bumper = Flywheel Toggle for tower shot speeds
+    // Right Bumper = Flywheel Toggle for hub shot speeds
     controller
         .rightBumper()
         .toggleOnTrue(
-            new FlywheelCommand(flywheel, FlywheelCommand.Position.TOWER_SHOT, drivetrain));
-    // A = Flywheel Toggle of calculated shots
+            new FlywheelCommand(flywheel, FlywheelCommand.Position.HUB_SHOT, drivetrain)
+                .alongWith(Commands.run(() -> shooterState = "HUB")));
+    // Left Bumper = Flywheel Toggle for tower shot speeds
     controller
-        .a()
+        .leftBumper()
         .toggleOnTrue(
-            new FlywheelCommand(flywheel, FlywheelCommand.Position.CALCULATED_SHOT, drivetrain));
+            new FlywheelCommand(flywheel, FlywheelCommand.Position.TOWER_SHOT, drivetrain)
+                .alongWith(Commands.run(() -> shooterState = "TOWER")));
+    // Left Trigger = Flywheel Toggle for trench shot speeds
+    controller
+        .leftTrigger()
+        .toggleOnTrue(
+            new FlywheelCommand(flywheel, FlywheelCommand.Position.TRENCH_SHOT, drivetrain)
+                .alongWith(Commands.run(() -> shooterState = "TRENCH")));
+    // Down Plus = Zero hopper
     controller.povDown().onTrue(Commands.runOnce(() -> hopper.zero(), hopper));
+    // Up Plus = Defense Hopper
+    controller.povUp().toggleOnTrue(Commands.run(() -> hopper.retractDirectional(0.8), hopper));
   }
 
   public Command getAutonomousCommand() {
-    // Not finished yet
-    // Placeholder
-    return Commands.print("No autonomous command configured");
+    return autoChooser.getSelected();
   }
 
   public static void zeroPigeon() {

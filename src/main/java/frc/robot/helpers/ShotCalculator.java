@@ -130,9 +130,12 @@ public class ShotCalculator {
 
   // Set map inputs
   static {
-    DISTANCE_TO_FLYWHEEL.put(Units.inchesToMeters(171), 87.0);
+    DISTANCE_TO_FLYWHEEL.put(Units.inchesToMeters(174), 87.0);
     DISTANCE_TO_FLYWHEEL.put(Units.inchesToMeters(141), 70.0);
     DISTANCE_TO_FLYWHEEL.put(Units.inchesToMeters(90), 60.0);
     DISTANCE_TO_FLYWHEEL.put(Units.inchesToMeters(61), 50.0);
+    DISTANCE_TO_FLYWHEEL.put(Units.inchesToMeters(43), 40.0);
+    DISTANCE_TO_FLYWHEEL.put(Units.inchesToMeters(74), 50.0);
+    DISTANCE_TO_FLYWHEEL.put(Units.inchesToMeters(134), 65.0);
   }
 }

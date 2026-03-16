@@ -34,8 +34,8 @@ public class DrivetrainCommand extends Command {
           .in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
   private final SwerveRequest.FieldCentric drive =
       new SwerveRequest.FieldCentric()
-          .withDeadband(MaxSpeed * 0.2)
-          .withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
+          .withDeadband(MaxSpeed * 0.25)
+          .withRotationalDeadband(MaxAngularRate * 0.25) // Add a 10% deadband
           .withDriveRequestType(
               SwerveModule.DriveRequestType
                   .OpenLoopVoltage); // Use open-loop control for drive motors
