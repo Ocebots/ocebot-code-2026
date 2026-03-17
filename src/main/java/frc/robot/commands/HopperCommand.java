@@ -2,6 +2,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.RobotContainer;
 import frc.robot.config.HopperConfig;
 import frc.robot.subsystems.Hopper;
 
@@ -15,11 +16,12 @@ public class HopperCommand extends Command {
 
   private Hopper subsystem;
   private HopperCommand.Position pose;
-  private static boolean isExtended = false;
+  private boolean isExtended;
 
-  public HopperCommand(Hopper subsystem, HopperCommand.Position pose) {
+  public HopperCommand(Hopper subsystem, HopperCommand.Position pose, boolean isExtended) {
     this.pose = pose;
     this.subsystem = subsystem;
+    this.isExtended = isExtended;
 
     addRequirements(subsystem);
   }
@@ -31,13 +33,15 @@ public class HopperCommand extends Command {
       // (Needs check) If hopper already extended, retract, and if hopper retracted, extend
       case EXTEND_RETRACT:
         if (isExtended) {
-          //          System.out.println("Hopper: Retracting");
+          System.out.println("Hopper: Retracting");
           subsystem.move(HopperConfig.HOPPER_RETRACT_ROTATION);
-          isExtended = false;
+          RobotContainer.isExtended = false;
+          System.out.println(RobotContainer.isExtended);
         } else {
-          //          System.out.println("Hopper: Extending");
+          System.out.println("Hopper: Extending");
           subsystem.move(HopperConfig.HOPPER_EXTEND_ROTATION);
-          isExtended = true;
+          RobotContainer.isExtended = true;
+          System.out.println(RobotContainer.isExtended);
         }
         break;
 
