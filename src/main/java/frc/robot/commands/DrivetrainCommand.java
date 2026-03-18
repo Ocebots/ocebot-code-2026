@@ -132,6 +132,7 @@ public class DrivetrainCommand extends Command {
           m_targetAngle =
               ShotCalculator.getRotationTowardsHub(
                   ShotCalculator.calculateHubPosition(), subsystem.getState().Pose.getTranslation());
+                  System.out.println("Auto Align Current Pose: "+subsystem.getState().Pose.getX()+" "+subsystem.getState().Pose.getY());
 
           double currentRad = subsystem.getState().Pose.getRotation().getRadians();
           double targetRad = m_targetAngle.getRadians();
@@ -147,6 +148,7 @@ public class DrivetrainCommand extends Command {
             subsystem.setControl(drive.withVelocityX(0.0).withVelocityY(0.0).withRotationalRate(0.0));
           } else {
             // Not aligned: apply rotational output
+            System.out.println("new rotational output: "+rotOutput);
             subsystem.setControl(
                 drive.withVelocityX(0.0).withVelocityY(0.0).withRotationalRate(rotOutput));
           }
