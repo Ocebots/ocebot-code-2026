@@ -5,28 +5,29 @@
 package frc.robot;
 
 import static frc.robot.RobotContainer.shooterState;
-import static frc.robot.config.VisionConfig.photonPoseEstimatorForward;
-import static frc.robot.config.VisionConfig.result;
 
 import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.commands.FlywheelCommand;
 import frc.robot.config.TunerConstants;
-import frc.robot.config.VisionConfig;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
-import java.util.Optional;
-import org.photonvision.EstimatedRobotPose;
 
 @Logged
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+  // last time we injected a synthetic vision measurement (seconds, FPGA time)
+  private double m_lastSimVisionTime = 0.0;
+  // whether we've injected a one-time offset vision measurement for testing
+  private boolean m_injectedOffset = false;
 
   private final RobotContainer m_robotContainer;
 
@@ -39,22 +40,19 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotPeriodic() {
-    CommandScheduler.getInstance().run();
-    Optional<EstimatedRobotPose> visionEst =
-        VisionConfig.photonPoseEstimatorForward.estimateCoprocMultiTagPose(result);
-    if (visionEst.isEmpty()) {
-      visionEst = VisionConfig.photonPoseEstimatorForward.estimateLowestAmbiguityPose(result);
-    } else {
-      drivetrain.addVisionMeasurement(
-          photonPoseEstimatorForward
-              .estimateAverageBestTargetsPose(result)
-              .get()
-              .estimatedPose
-              .toPose2d(),
-          visionEst.get().timestampSeconds);
-    }
     SmartDashboard.putString("shoot-state", shooterState);
     SmartDashboard.putString("shoot-on", FlywheelCommand.isOn);
+    try {
+      var pose = drivetrain.getState().Pose;
+      SmartDashboard.putNumber("OdometryX", pose.getX());
+      SmartDashboard.putNumber("OdometryY", pose.getY());
+      SmartDashboard.putNumber("OdometryRotDeg", pose.getRotation().getDegrees());
+      SmartDashboard.putNumber("SimVisionLastInject", m_lastSimVisionTime);
+      System.out.printf(
+          "ODOM X=%.3f Y=%.3f R=%.2f SimVision=%.3f\n",
+          pose.getX(), pose.getY(), pose.getRotation().getDegrees(), m_lastSimVisionTime);
+    } catch (Exception ignored) {
+    }
   }
 
   @Override
@@ -109,5 +107,25 @@ public class Robot extends TimedRobot {
   public void simulationInit() {}
 
   @Override
-  public void simulationPeriodic() {}
+  public void simulationPeriodic() {
+    double now = Timer.getFPGATimestamp();
+    if (now - m_lastSimVisionTime >= 0.1) {
+      m_lastSimVisionTime = now;
+      try {
+        var truePose = drivetrain.getState().Pose;
+        // After 3 seconds, inject a single offset measurement (+1m X) to observe correction
+        if (!m_injectedOffset && now > 3.0) {
+          Pose2d offsetPose =
+              new Pose2d(truePose.getX() + 1.0, truePose.getY(), truePose.getRotation());
+          drivetrain.addVisionMeasurement(offsetPose, now);
+          System.out.println("SIM INJECT: OFFSET +1.0m X at " + now);
+          m_injectedOffset = true;
+        } else {
+          drivetrain.addVisionMeasurement(truePose, now);
+        }
+      } catch (Exception e) {
+        DriverStation.reportError("Sim vision injection failed: " + e.getMessage(), false);
+      }
+    }
+  }
 }
