@@ -41,13 +41,13 @@ public class ShotCalculator {
     return null;
   }
 
-  public static Rotation2d getRotationTowardsHub(Translation2d hubpose, Translation2d currentpose){
-      double deltaX = hubpose.getX() - currentpose.getX();
-      double deltaY = hubpose.getY() - currentpose.getY();
+  public static Rotation2d getRotationTowardsHub(Translation2d hubpose, Translation2d currentpose) {
+    double deltaX = hubpose.getX() - currentpose.getX();
+    double deltaY = hubpose.getY() - currentpose.getY();
 
-      double angleRadians = Math.atan2(deltaY, deltaX);
+    double angleRadians = Math.atan2(deltaY, deltaX);
 
-      return new Rotation2d(angleRadians);
+    return new Rotation2d(angleRadians);
   }
 
   // Determines active based on current match time

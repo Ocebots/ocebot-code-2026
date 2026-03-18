@@ -232,18 +232,20 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
       this.m_FrontPhotonPoseEstimator =
           new PhotonPoseEstimator(fieldLayout, VisionConfig.FORWARD_CAMERA_POSITION);
     } catch (Exception e) {
-      DriverStation.reportError("Failed to create front PhotonPoseEstimator: " + e.getMessage(), true);
+      DriverStation.reportError(
+          "Failed to create front PhotonPoseEstimator: " + e.getMessage(), true);
       this.m_FrontPhotonPoseEstimator = null;
     }
-      try {
-          AprilTagFieldLayout fieldLayout =
-                  AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark);
-          this.m_RearPhotonPoseEstimator =
-                  new PhotonPoseEstimator(fieldLayout, VisionConfig.REAR_CAMERA_POSITION);
-      } catch (Exception e) {
-          DriverStation.reportError("Failed to create rear PhotonPoseEstimator: " + e.getMessage(), true);
-          this.m_RearPhotonPoseEstimator = null;
-      }
+    try {
+      AprilTagFieldLayout fieldLayout =
+          AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark);
+      this.m_RearPhotonPoseEstimator =
+          new PhotonPoseEstimator(fieldLayout, VisionConfig.REAR_CAMERA_POSITION);
+    } catch (Exception e) {
+      DriverStation.reportError(
+          "Failed to create rear PhotonPoseEstimator: " + e.getMessage(), true);
+      this.m_RearPhotonPoseEstimator = null;
+    }
   }
 
   /**
@@ -325,32 +327,32 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             });
       }
     }
-      if (m_RearPhotonPoseEstimator != null) {
-          var rearResults = Vision.RearCameraApril.getAllUnreadResults();
+    if (m_RearPhotonPoseEstimator != null) {
+      var rearResults = Vision.RearCameraApril.getAllUnreadResults();
 
-          for (var result : rearResults) {
-              // 2. Use the 2026 explicit methods to calculate pose
-              var visionEst = m_RearPhotonPoseEstimator.estimateCoprocMultiTagPose(result);
+      for (var result : rearResults) {
+        // 2. Use the 2026 explicit methods to calculate pose
+        var visionEst = m_RearPhotonPoseEstimator.estimateCoprocMultiTagPose(result);
 
-              // Fallback to single tag if multi-tag isn't available
-              if (visionEst.isEmpty()) {
-                  var bestTarget = result.getBestTarget();
-                  if (bestTarget != null && bestTarget.getPoseAmbiguity() < 0.2) {
-                      visionEst = m_RearPhotonPoseEstimator.estimateLowestAmbiguityPose(result);
-                  }
-              }
-
-                // 3. Apply the successful estimation to the CTRE odometry and log to file
-                visionEst.ifPresent(
-                    est -> {
-                      Pose2d pose = est.estimatedPose.toPose2d();
-                      double ts = est.timestampSeconds;
-                      SignalLogger.writeStruct("Vision/Rear/Pose", Pose2d.struct, pose);
-                      SignalLogger.writeDouble("Vision/Rear/Timestamp", ts, "seconds");
-                      addVisionMeasurement(pose, ts, VisionConfig.REAR_VISION_STDDEVS);
-                    });
+        // Fallback to single tag if multi-tag isn't available
+        if (visionEst.isEmpty()) {
+          var bestTarget = result.getBestTarget();
+          if (bestTarget != null && bestTarget.getPoseAmbiguity() < 0.2) {
+            visionEst = m_RearPhotonPoseEstimator.estimateLowestAmbiguityPose(result);
           }
+        }
+
+        // 3. Apply the successful estimation to the CTRE odometry and log to file
+        visionEst.ifPresent(
+            est -> {
+              Pose2d pose = est.estimatedPose.toPose2d();
+              double ts = est.timestampSeconds;
+              SignalLogger.writeStruct("Vision/Rear/Pose", Pose2d.struct, pose);
+              SignalLogger.writeDouble("Vision/Rear/Timestamp", ts, "seconds");
+              addVisionMeasurement(pose, ts, VisionConfig.REAR_VISION_STDDEVS);
+            });
       }
+    }
   }
 
   private void startSimThread() {

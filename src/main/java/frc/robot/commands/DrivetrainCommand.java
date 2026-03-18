@@ -9,9 +9,7 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.math.trajectory.constraint.MaxVelocityConstraint;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.config.TunerConstants;
 import frc.robot.helpers.ApplyModuleStates;
 import frc.robot.helpers.ShotCalculator;
@@ -24,7 +22,7 @@ public class DrivetrainCommand extends Command {
     TELEOP,
     STILL_SHOT,
     SOTM,
-      AUTO_ALIGN_HUB
+    AUTO_ALIGN_HUB
   }
 
   private CommandSwerveDrivetrain subsystem;
@@ -72,19 +70,21 @@ public class DrivetrainCommand extends Command {
     double alignI = 1;
     double alignD = 1;
     this.autoAlignPidController =
-      new ProfiledPIDController(
-        alignP,
-        alignI,
-        alignD,
-        new TrapezoidProfile.Constraints(MaxAngularRate, MaxAngularRate / 0.2));
-    this.autoAlignPidController.enableContinuousInput(-Math.PI, Math.PI); // Swerve angles are continuous (-180 to 180 deg)
+        new ProfiledPIDController(
+            alignP,
+            alignI,
+            alignD,
+            new TrapezoidProfile.Constraints(MaxAngularRate, MaxAngularRate / 0.2));
+    this.autoAlignPidController.enableContinuousInput(
+        -Math.PI, Math.PI); // Swerve angles are continuous (-180 to 180 deg)
     // Don't compute hub-facing target in the constructor (DriverStation alliance may be
     // unavailable during initialization). Initialize to current heading; execute() will
     // recompute the actual hub-facing target each loop.
     this.m_targetAngle = subsystem.getState().Pose.getRotation();
 
-      addRequirements(subsystem);
+    addRequirements(subsystem);
   }
+
   public double getAutoAlignRotationalOutput() {
     Rotation2d currentAngle = subsystem.getState().Pose.getRotation();
     double current = currentAngle.getRadians();
@@ -97,6 +97,7 @@ public class DrivetrainCommand extends Command {
     }
     return output;
   }
+
   @Override
   public void execute() {
     switch (pose) {
@@ -127,33 +128,38 @@ public class DrivetrainCommand extends Command {
         System.out.println("Drivetrain: SOTM Drive");
         break;
 
-        case AUTO_ALIGN_HUB:
-          // Recompute the desired heading toward the hub each loop
-          m_targetAngle =
-              ShotCalculator.getRotationTowardsHub(
-                  ShotCalculator.calculateHubPosition(), subsystem.getState().Pose.getTranslation());
-                  System.out.println("Auto Align Current Pose: "+subsystem.getState().Pose.getX()+" "+subsystem.getState().Pose.getY());
+      case AUTO_ALIGN_HUB:
+        // Recompute the desired heading toward the hub each loop
+        m_targetAngle =
+            ShotCalculator.getRotationTowardsHub(
+                ShotCalculator.calculateHubPosition(), subsystem.getState().Pose.getTranslation());
+        System.out.println(
+            "Auto Align Current Pose: "
+                + subsystem.getState().Pose.getX()
+                + " "
+                + subsystem.getState().Pose.getY());
 
-          double currentRad = subsystem.getState().Pose.getRotation().getRadians();
-          double targetRad = m_targetAngle.getRadians();
-          // Normalize error to [-pi, pi]
-          double error = Math.atan2(Math.sin(targetRad - currentRad), Math.cos(targetRad - currentRad));
-          double absError = Math.abs(error);
-          double angleTolerance = Math.toRadians(1.0); // stop within 1 degree
+        double currentRad = subsystem.getState().Pose.getRotation().getRadians();
+        double targetRad = m_targetAngle.getRadians();
+        // Normalize error to [-pi, pi]
+        double error =
+            Math.atan2(Math.sin(targetRad - currentRad), Math.cos(targetRad - currentRad));
+        double absError = Math.abs(error);
+        double angleTolerance = Math.toRadians(1.0); // stop within 1 degree
 
-          double rotOutput = getAutoAlignRotationalOutput();
+        double rotOutput = getAutoAlignRotationalOutput();
 
-          if (absError < angleTolerance) {
-            // Aligned: stop rotating (and hold position)
-            subsystem.setControl(drive.withVelocityX(0.0).withVelocityY(0.0).withRotationalRate(0.0));
-          } else {
-            // Not aligned: apply rotational output
-            System.out.println("new rotational output: "+rotOutput);
-            subsystem.setControl(
-                drive.withVelocityX(0.0).withVelocityY(0.0).withRotationalRate(rotOutput));
-          }
+        if (absError < angleTolerance) {
+          // Aligned: stop rotating (and hold position)
+          subsystem.setControl(drive.withVelocityX(0.0).withVelocityY(0.0).withRotationalRate(0.0));
+        } else {
+          // Not aligned: apply rotational output
+          System.out.println("new rotational output: " + rotOutput);
+          subsystem.setControl(
+              drive.withVelocityX(0.0).withVelocityY(0.0).withRotationalRate(rotOutput));
+        }
 
-          break;
+        break;
 
       default:
         break;
@@ -174,7 +180,8 @@ public class DrivetrainCommand extends Command {
       return false;
     }
 
-    edu.wpi.first.math.geometry.Translation2d currentTrans = subsystem.getState().Pose.getTranslation();
+    edu.wpi.first.math.geometry.Translation2d currentTrans =
+        subsystem.getState().Pose.getTranslation();
     if (currentTrans == null) {
       return false;
     }

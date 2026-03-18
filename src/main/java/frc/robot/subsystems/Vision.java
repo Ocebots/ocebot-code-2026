@@ -7,5 +7,6 @@ import org.photonvision.PhotonCamera;
 public class Vision extends SubsystemBase {
   public static final PhotonCamera FrontCameraApril =
       new PhotonCamera(VisionConfig.FRONT_CAMERA_NAME);
-      public static final PhotonCamera RearCameraApril = new PhotonCamera(VisionConfig.REAR_CAMERA_NAME);
+  public static final PhotonCamera RearCameraApril =
+      new PhotonCamera(VisionConfig.REAR_CAMERA_NAME);
 }
