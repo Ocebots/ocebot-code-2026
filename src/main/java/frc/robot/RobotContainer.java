@@ -28,7 +28,6 @@ public class RobotContainer {
   private Flywheel flywheel = new Flywheel();
   private CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
   private Hopper hopper = new Hopper();
-  private Climb climb = new Climb();
   private Intake intake = new Intake();
   private Kicker kicker = new Kicker();
   private CommandXboxController controller = new CommandXboxController(1);
