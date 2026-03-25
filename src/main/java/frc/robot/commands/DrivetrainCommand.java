@@ -31,6 +31,7 @@ public class DrivetrainCommand extends Command {
   private DoubleSupplier leftY;
   private DoubleSupplier leftX;
   private DoubleSupplier rightX;
+  public static String drivetrainState = "Stopped";
 
   private final double MaxSpeed =
       TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -113,7 +114,7 @@ public class DrivetrainCommand extends Command {
                 .withRotationalRate(
                     -rightX.getAsDouble()
                         * MaxAngularRate)); // Drive counterclockwise with negative X
-        //        System.out.println("TELEOP");
+        drivetrainState = "Teleop Drive";
         break;
 
       // (Needs check) Mode for when shots are from a still position
@@ -121,17 +122,16 @@ public class DrivetrainCommand extends Command {
         // make X with wheels, set wheels to brake mode
         applyRequest.ModuleStates = states;
         subsystem.setControl(applyRequest);
-        //        System.out.println("Drivetrain: Still Shot Configuration");
+        drivetrainState = "Still Shot";
         break;
 
       // (Incomplete) Mode for moving shots
       case SOTM:
         // shoot on the move, reference Mechanical Advantage build log
-        //        System.out.println("Drivetrain: SOTM Drive");
+        drivetrainState = "Shoot on the Move Drive";
         break;
 
       case AUTO_ALIGN_HUB:
-        //        System.out.println("AUTO ALIGN");
         // Recompute the desired heading toward the hub each loop
         m_targetAngle =
             ShotCalculator.getRotationTowardsHub(
@@ -155,7 +155,7 @@ public class DrivetrainCommand extends Command {
           subsystem.setControl(
               drive.withVelocityX(0.0).withVelocityY(0.0).withRotationalRate(rotOutput));
         }
-
+        drivetrainState = "Auto Align";
         break;
 
       default:

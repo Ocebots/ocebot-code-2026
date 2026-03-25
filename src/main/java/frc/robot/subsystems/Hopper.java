@@ -14,6 +14,7 @@ import frc.robot.config.HopperConfig;
 @Logged
 public class Hopper extends SubsystemBase {
   protected TalonFX hopper;
+  public static String hopperState = "None";
 
   public Hopper() {
 
@@ -52,25 +53,41 @@ public class Hopper extends SubsystemBase {
 
   public void move(double rotation) {
     hopper.setControl(new MotionMagicVoltage(rotation).withSlot(0));
+    if (rotation == HopperConfig.HOPPER_EXTEND_ROTATION) {
+      hopperState = "Move: Extending";
+    } else if (rotation == HopperConfig.HOPPER_RETRACT_ROTATION) {
+      hopperState = "Move: Retracting";
+    } else {
+      hopperState = "Move: Unknown";
+    }
   }
 
   public void slowMove(double rotation) {
     hopper.setControl(new MotionMagicVoltage(rotation).withSlot(1));
+    if (rotation == HopperConfig.HOPPER_EXTEND_ROTATION) {
+      hopperState = "Slow Move: Extending";
+    } else if (rotation == HopperConfig.HOPPER_RETRACT_ROTATION) {
+      hopperState = "Slow Move: Retracting";
+    } else {
+      hopperState = "Slow Move: Unknown";
+    }
   }
 
   public void extendDirectional(double speed) {
     speed = Math.abs(speed);
     hopper.setControl(new VoltageOut(-speed));
+    hopperState = "Extend Directional";
   }
 
   public void retractDirectional(double speed) {
     speed = Math.abs(speed);
     hopper.setControl(new VoltageOut(-speed));
+    hopperState = "Retract Directional";
   }
 
   public void stop() {
     hopper.stopMotor();
-    System.out.println("Hopper: Stopped");
+    hopperState = "Stopped";
   }
 
   public void zero() {
@@ -109,23 +126,10 @@ public class Hopper extends SubsystemBase {
   public void toggleExtend() {
     if (extended) {
       move(HopperConfig.HOPPER_RETRACT_ROTATION);
-      System.out.println("Hopper: retracting");
       extended = false;
     } else {
       move(HopperConfig.HOPPER_EXTEND_ROTATION);
-      System.out.println("Hopper: extending");
       extended = true;
     }
   }
-
-  //    @Override
-  //    public void periodic() {
-  //      if (DriverStation.isDisabled()) {
-  //        hopper.setNeutralMode(NeutralModeValue.Coast);
-  //      } else if (isRetractedByPosition()) {
-  //        hopper.setNeutralMode(NeutralModeValue.Brake);
-  //      } else {
-  //        hopper.setNeutralMode(NeutralModeValue.Coast);
-  //      }
-  //    }
 }

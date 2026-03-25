@@ -14,6 +14,7 @@ public class KickerCommand extends Command {
 
   private Kicker subsystem;
   private Position pose;
+  public static String kickerState = "Stopped";
 
   public KickerCommand(Kicker subsystem, Position pose) {
     this.pose = pose;
@@ -28,11 +29,13 @@ public class KickerCommand extends Command {
       // Intakes balls to shooter
       case INTAKE:
         subsystem.intake(KickerConfig.KICKER_INTAKE_SPEED);
+        kickerState = "Intaking";
         break;
 
       // Pushes balls out of shooter area to hopper area
       case OUTTAKE:
         subsystem.outtake(KickerConfig.KICKER_OUTTAKE_SPEED);
+        kickerState = "Outtaking";
         break;
 
       default:
@@ -43,6 +46,7 @@ public class KickerCommand extends Command {
   @Override
   public void end(boolean interrupted) {
     subsystem.stop();
+    kickerState = "Stopped";
   }
 
   @Override

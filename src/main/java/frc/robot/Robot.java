@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-import static frc.robot.RobotContainer.shooterState;
-
 import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -19,9 +17,13 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.commands.DrivetrainCommand;
 import frc.robot.commands.FlywheelCommand;
+import frc.robot.commands.KickerCommand;
 import frc.robot.config.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.Hopper;
+import frc.robot.subsystems.Intake;
 
 @Logged
 public class Robot extends TimedRobot {
@@ -48,8 +50,11 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
-    SmartDashboard.putString("shoot-state", shooterState);
-    SmartDashboard.putString("shoot-on", FlywheelCommand.isOn);
+    SmartDashboard.putString("Flywheel State", FlywheelCommand.flywheelState);
+    SmartDashboard.putString("Drivetrain State", DrivetrainCommand.drivetrainState);
+    SmartDashboard.putString("Hopper State", Hopper.hopperState);
+    SmartDashboard.putString("Intake State", Intake.intakeState);
+    SmartDashboard.putString("Kicker State", KickerCommand.kickerState);
     try {
       var pose = drivetrain.getState().Pose;
       SmartDashboard.putNumber("OdometryX", pose.getX());
