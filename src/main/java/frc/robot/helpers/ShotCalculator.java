@@ -1,5 +1,6 @@
 package frc.robot.helpers;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.util.Units;
@@ -11,7 +12,7 @@ public class ShotCalculator {
   /* Calculation Methods */
   public static double calculateFlywheelShot(Translation2d robotPosition) {
     // 1. Calculate distance between goal and robot position
-    double distanceToGoal = calculateGoalPosition().getDistance(robotPosition);
+    double distanceToGoal = calculateHubPosition().getDistance(robotPosition);
     // 2. Retrieve correlating RPS from map
     return DISTANCE_TO_FLYWHEEL.get(distanceToGoal);
   }
@@ -27,7 +28,7 @@ public class ShotCalculator {
   }
 
   /* Helper Methods */
-  public static Translation2d calculateGoalPosition() {
+  public static Translation2d calculateHubPosition() {
     Optional<DriverStation.Alliance> alliance = DriverStation.getAlliance();
     if (alliance.isPresent()) {
       if (alliance.get() == DriverStation.Alliance.Blue) {
@@ -37,7 +38,16 @@ public class ShotCalculator {
             Units.inchesToMeters(651.22 - 182.11), Units.inchesToMeters(158.84));
       }
     }
-    return null;
+    return new Translation2d(Units.inchesToMeters(182.11), Units.inchesToMeters(158.84));
+  }
+
+  public static Rotation2d getRotationTowardsHub(Translation2d hubpose, Translation2d currentpose) {
+    double deltaX = hubpose.getX() - currentpose.getX();
+    double deltaY = hubpose.getY() - currentpose.getY();
+
+    double angleRadians = Math.atan2(deltaY, deltaX);
+
+    return new Rotation2d(angleRadians);
   }
 
   // Determines active based on current match time

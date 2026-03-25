@@ -9,6 +9,9 @@ import static frc.robot.RobotContainer.shooterState;
 import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructArrayPublisher;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -28,8 +31,12 @@ public class Robot extends TimedRobot {
   private double m_lastSimVisionTime = 0.0;
   // whether we've injected a one-time offset vision measurement for testing
   private boolean m_injectedOffset = false;
-
+  private Pose2d robotPose = new Pose2d();
   private final RobotContainer m_robotContainer;
+  StructPublisher<Pose2d> publisher =
+      NetworkTableInstance.getDefault().getStructTopic("Robot Pose", Pose2d.struct).publish();
+  StructArrayPublisher<Pose2d> arrayPublisher =
+      NetworkTableInstance.getDefault().getStructArrayTopic("MyPoseArray", Pose2d.struct).publish();
 
   public Robot() {
     m_robotContainer = new RobotContainer();
@@ -40,6 +47,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotPeriodic() {
+    CommandScheduler.getInstance().run();
     SmartDashboard.putString("shoot-state", shooterState);
     SmartDashboard.putString("shoot-on", FlywheelCommand.isOn);
     try {
@@ -48,11 +56,11 @@ public class Robot extends TimedRobot {
       SmartDashboard.putNumber("OdometryY", pose.getY());
       SmartDashboard.putNumber("OdometryRotDeg", pose.getRotation().getDegrees());
       SmartDashboard.putNumber("SimVisionLastInject", m_lastSimVisionTime);
-      System.out.printf(
-          "ODOM X=%.3f Y=%.3f R=%.2f SimVision=%.3f\n",
-          pose.getX(), pose.getY(), pose.getRotation().getDegrees(), m_lastSimVisionTime);
     } catch (Exception ignored) {
     }
+    robotPose = drivetrain.getState().Pose;
+    publisher.set(robotPose);
+    arrayPublisher.set(new Pose2d[] {robotPose});
   }
 
   @Override
@@ -118,7 +126,6 @@ public class Robot extends TimedRobot {
           Pose2d offsetPose =
               new Pose2d(truePose.getX() + 1.0, truePose.getY(), truePose.getRotation());
           drivetrain.addVisionMeasurement(offsetPose, now);
-          System.out.println("SIM INJECT: OFFSET +1.0m X at " + now);
           m_injectedOffset = true;
         } else {
           drivetrain.addVisionMeasurement(truePose, now);
