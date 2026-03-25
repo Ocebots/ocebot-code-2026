@@ -119,16 +119,6 @@ public class RobotContainer {
             controller::getLeftY,
             controller::getRightX));
 
-    controller
-        .x()
-        .toggleOnTrue(
-            new DrivetrainCommand(
-                drivetrain,
-                DrivetrainCommand.Position.AUTO_ALIGN_HUB,
-                controller::getLeftX,
-                controller::getLeftY,
-                controller::getRightX));
-
     /* Controls */
     // Y = Shoot Toggle
     controller
