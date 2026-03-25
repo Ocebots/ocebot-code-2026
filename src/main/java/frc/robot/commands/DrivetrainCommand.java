@@ -113,7 +113,7 @@ public class DrivetrainCommand extends Command {
                 .withRotationalRate(
                     -rightX.getAsDouble()
                         * MaxAngularRate)); // Drive counterclockwise with negative X
-        System.out.println("TELEOP");
+        //        System.out.println("TELEOP");
         break;
 
       // (Needs check) Mode for when shots are from a still position
@@ -121,17 +121,17 @@ public class DrivetrainCommand extends Command {
         // make X with wheels, set wheels to brake mode
         applyRequest.ModuleStates = states;
         subsystem.setControl(applyRequest);
-        System.out.println("Drivetrain: Still Shot Configuration");
+        //        System.out.println("Drivetrain: Still Shot Configuration");
         break;
 
       // (Incomplete) Mode for moving shots
       case SOTM:
         // shoot on the move, reference Mechanical Advantage build log
-        System.out.println("Drivetrain: SOTM Drive");
+        //        System.out.println("Drivetrain: SOTM Drive");
         break;
 
       case AUTO_ALIGN_HUB:
-        System.out.println("AUTO ALIGN");
+        //        System.out.println("AUTO ALIGN");
         // Recompute the desired heading toward the hub each loop
         m_targetAngle =
             ShotCalculator.getRotationTowardsHub(

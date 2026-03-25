@@ -59,10 +59,12 @@ public class FlywheelCommand extends Command {
       // Spins flywheels at estimated speed given distance from hub
       case CALCULATED_SHOT:
         isOn = "true";
-
         subsystem.shoot(
             ShotCalculator.calculateFlywheelShot(drivetrain.getState().Pose.getTranslation()));
-        //         System.out.println("Flywheel: Calculated Shot");
+        System.out.println(
+            "Flywheel: Calculated Shot"
+                + ShotCalculator.calculateFlywheelShot(
+                    drivetrain.getState().Pose.getTranslation()));
         break;
 
       // Determines if robot should be prepared to shoot (if during active period or 5 seconds
