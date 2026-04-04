@@ -13,6 +13,7 @@ import frc.robot.config.IntakeConfig;
 @Logged
 public class Intake extends SubsystemBase {
   protected TalonFX intake;
+  public static String intakeState = "Stopped";
 
   public Intake() {
     intake = new TalonFX(CANMappings.INTAKE_MOTOR_ID);
@@ -34,14 +35,23 @@ public class Intake extends SubsystemBase {
   public void intake(double speed) {
     speed = Math.abs(speed);
     intake.setControl(new VoltageOut(speed));
+    if (speed == IntakeConfig.INTAKE_INTAKE_SPEED) {
+      intakeState = "Intaking: Default";
+    } else if (speed == IntakeConfig.INTAKE_SLOW_SPEED) {
+      intakeState = "Intaking: Slow";
+    } else {
+      intakeState = "Intaking: Unknown";
+    }
   }
 
   public void outtake(double speed) {
     speed = Math.abs(speed);
     intake.setControl(new VoltageOut(-speed));
+    intakeState = "Outtaking";
   }
 
   public void stop() {
     intake.stopMotor();
+    intakeState = "Stopped";
   }
 }

@@ -34,27 +34,21 @@ public class HopperCommand extends Command {
       // extend
       case EXTEND_RETRACT:
         if (isExtended) {
-          System.out.println("Hopper: Retracting");
           subsystem.move(HopperConfig.HOPPER_RETRACT_ROTATION);
           RobotContainer.isExtended = false;
-          System.out.println(RobotContainer.isExtended);
         } else {
-          System.out.println("Hopper: Extending");
           subsystem.move(HopperConfig.HOPPER_EXTEND_ROTATION);
           RobotContainer.isExtended = true;
-          System.out.println(RobotContainer.isExtended);
         }
         break;
 
-      // (Needs check) Retracts then extends hopper back to original position to push balls into
+      // Retracts then extends hopper back to original position to push balls into
       // kicker for shooting
       case SHOOT_RETRACT:
-        //        System.out.println("Hopper: Shoot Retracting");
         subsystem.slowMove(HopperConfig.HOPPER_RETRACT_ROTATION);
         break;
 
       case SHOOT_EXTEND:
-        //        System.out.println("Hopper: Shoot Extending");
         subsystem.move(HopperConfig.HOPPER_EXTEND_ROTATION);
         break;
 

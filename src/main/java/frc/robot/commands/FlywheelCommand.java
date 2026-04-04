@@ -21,7 +21,7 @@ public class FlywheelCommand extends Command {
   private Flywheel subsystem;
   private Position pose;
   private CommandSwerveDrivetrain drivetrain;
-  public static String isOn = "";
+  public static String flywheelState = "Stopped";
 
   public FlywheelCommand(Flywheel subsystem, Position pose, CommandSwerveDrivetrain drivetrain) {
     this.pose = pose;
@@ -37,32 +37,25 @@ public class FlywheelCommand extends Command {
       // Spins flywheels at proper speed for shooting from hub
       case HUB_SHOT:
         subsystem.shoot(FlywheelConfig.FLYWHEEL_HUB_SHOT_SPEED);
-        isOn = "true";
-        //                 System.out.println("Flywheel: Hub Shot");
+        flywheelState = "Hub Shot";
         break;
 
       // Spins flywheels at proper speed for shooting from tower
       case TOWER_SHOT:
         subsystem.shoot(FlywheelConfig.FLYWHEEL_TOWER_SHOT_SPEED);
-        isOn = "true";
-
-        //                 System.out.println("Flywheel: Tower Shot");
+        flywheelState = "Tower Shot";
         break;
 
       case TRENCH_SHOT:
         subsystem.shoot(FlywheelConfig.FLYWHEEL_TRENCH_SHOT_SPEED);
-        isOn = "true";
-
-        //        System.out.println("Flywheel: Trench Shot");
+        flywheelState = "Trench Shot";
         break;
 
       // Spins flywheels at estimated speed given distance from hub
       case CALCULATED_SHOT:
-        isOn = "true";
-
+        flywheelState = "Calculated Shot";
         subsystem.shoot(
             ShotCalculator.calculateFlywheelShot(drivetrain.getState().Pose.getTranslation()));
-        //         System.out.println("Flywheel: Calculated Shot");
         break;
 
       // Determines if robot should be prepared to shoot (if during active period or 5 seconds
@@ -72,13 +65,13 @@ public class FlywheelCommand extends Command {
         subsystem.shoot(
             ShotCalculator.calculateFlywheelDefaultShot(
                 drivetrain.getState().Pose.getTranslation()));
-        //         System.out.println("Flywheel: Default Shot");
+        flywheelState = "Default Shot";
         break;
 
       // Runs flywheels in outtake direction in case of jam
       case OUTTAKE:
         subsystem.outtake(FlywheelConfig.FLYWHEEL_OUTTAKE_SPEED);
-        // System.out.println("Flywheel: Outtake");
+        flywheelState = "Outtake";
         break;
 
       default:
@@ -89,7 +82,7 @@ public class FlywheelCommand extends Command {
   @Override
   public void end(boolean interrupted) {
     subsystem.stop();
-    isOn = "false";
+    flywheelState = "none";
   }
 
   @Override

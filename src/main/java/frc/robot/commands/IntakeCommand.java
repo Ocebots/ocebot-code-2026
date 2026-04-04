@@ -29,7 +29,6 @@ public class IntakeCommand extends Command {
       // Runs intake
       case INTAKE:
         subsystem.intake(IntakeConfig.INTAKE_INTAKE_SPEED);
-        //        System.out.println("Intake: Intaking");
         break;
 
       // Runs intake in outtaking direction
@@ -40,7 +39,6 @@ public class IntakeCommand extends Command {
       // Slow intake for shooting
       case SLOW_INTAKE:
         subsystem.intake(IntakeConfig.INTAKE_SLOW_SPEED);
-        //        System.out.println("Intake: run for shooting");
         break;
 
       default:

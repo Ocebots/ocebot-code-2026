@@ -5,7 +5,6 @@
 package frc.robot;
 
 import com.ctre.phoenix6.hardware.Pigeon2;
-import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.FollowPathCommand;
@@ -28,11 +27,9 @@ public class RobotContainer {
   private Flywheel flywheel = new Flywheel();
   private CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
   private Hopper hopper = new Hopper();
-  private Climb climb = new Climb();
   private Intake intake = new Intake();
   private Kicker kicker = new Kicker();
   private CommandXboxController controller = new CommandXboxController(1);
-  private SwerveDriveState driveState = new SwerveDriveState();
   private final SendableChooser<Command> autoChooser;
   public static boolean isExtended = false;
   public static String shooterState = "none";
@@ -176,8 +173,6 @@ public class RobotContainer {
                 .alongWith(Commands.run(() -> shooterState = "TRENCH")));
     // Down Plus = Zero hopper
     controller.povDown().onTrue(Commands.runOnce(() -> hopper.zero(), hopper));
-    // Up Plus = Defense Hopper
-    controller.povUp().toggleOnTrue(Commands.run(() -> hopper.retractDirectional(0.8), hopper));
   }
 
   public Command getAutonomousCommand() {
