@@ -55,6 +55,10 @@ public class Robot extends TimedRobot {
     SmartDashboard.putString("Hopper State", Hopper.hopperState);
     SmartDashboard.putString("Intake State", Intake.intakeState);
     SmartDashboard.putString("Kicker State", KickerCommand.kickerState);
+    SmartDashboard.putBoolean(
+        "Flywheel On",
+        !(FlywheelCommand.flywheelState.equals("none")
+            || FlywheelCommand.flywheelState.equals("Stopped")));
     try {
       var pose = drivetrain.getState().Pose;
       SmartDashboard.putNumber("OdometryX", pose.getX());

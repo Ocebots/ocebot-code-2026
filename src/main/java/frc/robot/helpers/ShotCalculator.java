@@ -18,10 +18,8 @@ public class ShotCalculator {
     double distanceToGoal = calculateHubPosition().getDistance(robotPosition);
     // 2. Retrieve correlating RPS from map based off of distance
     if (distanceToGoal > Units.inchesToMeters(87) || distanceToGoal < Units.inchesToMeters(43)) {
-      System.out.println(getRPM(distanceToGoal));
       return getRPM(distanceToGoal);
     }
-    System.out.println(DISTANCE_TO_FLYWHEEL.get(distanceToGoal));
     return DISTANCE_TO_FLYWHEEL.get(distanceToGoal);
   }
 
