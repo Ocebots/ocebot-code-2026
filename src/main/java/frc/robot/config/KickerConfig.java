@@ -1,11 +1,11 @@
 package frc.robot.config;
 
 public class KickerConfig {
-  public static final double KICKER_FRONT_STATOR_CURRENT_LIMIT = 80;
-  public static final double KICKER_FRONT_SUPPLY_CURRENT_LIMIT = 70;
+  public static final double KICKER_FRONT_STATOR_CURRENT_LIMIT = 60;
+  public static final double KICKER_FRONT_SUPPLY_CURRENT_LIMIT = 50;
   public static final double KICKER_FRONT_GEAR_RATIO = 3;
-  public static final double KICKER_BACK_STATOR_CURRENT_LIMIT = 80;
-  public static final double KICKER_BACK_SUPPLY_CURRENT_LIMIT = 70;
+  public static final double KICKER_BACK_STATOR_CURRENT_LIMIT = 60;
+  public static final double KICKER_BACK_SUPPLY_CURRENT_LIMIT = 50;
   public static final double KICKER_BACK_GEAR_RATIO = 3;
 
   // Set
