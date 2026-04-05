@@ -72,7 +72,7 @@ public class DrivetrainCommand extends Command {
     this.rightX = rightX;
     double alignP = 75;
     double alignI = 0;
-    double alignD = 0;
+    double alignD = 10;
     this.autoAlignPidController =
         new ProfiledPIDController(
             alignP,
