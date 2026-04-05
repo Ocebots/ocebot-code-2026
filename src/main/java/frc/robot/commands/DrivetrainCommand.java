@@ -70,7 +70,7 @@ public class DrivetrainCommand extends Command {
     this.leftX = leftX;
     this.leftY = leftY;
     this.rightX = rightX;
-    double alignP = 85;
+    double alignP = 75;
     double alignI = 0;
     double alignD = 0;
     this.autoAlignPidController =

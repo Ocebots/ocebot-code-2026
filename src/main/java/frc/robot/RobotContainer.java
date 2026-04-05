@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import com.ctre.phoenix6.hardware.Pigeon2;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.FollowPathCommand;
@@ -16,7 +15,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.*;
-import frc.robot.config.CANMappings;
 import frc.robot.config.HopperConfig;
 import frc.robot.config.IntakeConfig;
 import frc.robot.config.TunerConstants;
@@ -188,7 +186,7 @@ public class RobotContainer {
                 .withDeadline(Commands.waitSeconds(2))
                 .andThen(Commands.runOnce(() -> isExtended = !isExtended)));
     // Back button = Zero Pigeon
-    controller.back().onTrue(Commands.runOnce(() -> zeroPigeon()));
+    controller.back().onTrue(Commands.runOnce(drivetrain::seedFieldCentric));
     // Right Bumper = Flywheel Toggle for hub shot speeds
     controller
         .rightBumper()
@@ -222,12 +220,6 @@ public class RobotContainer {
 
   public Command getAutonomousCommand() {
     return autoChooser.getSelected();
-  }
-
-  public static void zeroPigeon() {
-    Pigeon2 pigeon = new Pigeon2(CANMappings.PIGEON_CAN_ID);
-    pigeon.reset();
-    System.out.println("Reset Pigeon");
   }
 
   public CommandSwerveDrivetrain getDrivetrain() {
