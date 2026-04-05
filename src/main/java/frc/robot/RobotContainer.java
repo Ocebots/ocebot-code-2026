@@ -229,4 +229,8 @@ public class RobotContainer {
     pigeon.reset();
     System.out.println("Reset Pigeon");
   }
+
+  public CommandSwerveDrivetrain getDrivetrain() {
+    return drivetrain;
+  }
 }

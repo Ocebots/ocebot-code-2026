@@ -20,7 +20,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.commands.DrivetrainCommand;
 import frc.robot.commands.FlywheelCommand;
 import frc.robot.commands.KickerCommand;
-import frc.robot.config.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Intake;
@@ -28,13 +27,13 @@ import frc.robot.subsystems.Intake;
 @Logged
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
-  private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
   // last time we injected a synthetic vision measurement (seconds, FPGA time)
   private double m_lastSimVisionTime = 0.0;
   // whether we've injected a one-time offset vision measurement for testing
   private boolean m_injectedOffset = false;
   private Pose2d robotPose = new Pose2d();
   private final RobotContainer m_robotContainer;
+  private final CommandSwerveDrivetrain drivetrain;
   StructPublisher<Pose2d> publisher =
       NetworkTableInstance.getDefault().getStructTopic("Robot Pose", Pose2d.struct).publish();
   StructArrayPublisher<Pose2d> arrayPublisher =
@@ -42,6 +41,7 @@ public class Robot extends TimedRobot {
 
   public Robot() {
     m_robotContainer = new RobotContainer();
+    drivetrain = m_robotContainer.getDrivetrain();
     Epilogue.bind(this);
     DataLogManager.start();
     DriverStation.startDataLog(DataLogManager.getLog());
