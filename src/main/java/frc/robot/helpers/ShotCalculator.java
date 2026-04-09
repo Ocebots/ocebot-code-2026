@@ -1,5 +1,6 @@
 package frc.robot.helpers;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
@@ -46,6 +47,42 @@ public class ShotCalculator {
       }
     }
     return new Translation2d(Units.inchesToMeters(182.11), Units.inchesToMeters(158.84));
+  }
+
+  public static Pose2d calculateLeftCornerRobotPosition() {
+    Optional<DriverStation.Alliance> alliance = DriverStation.getAlliance();
+    if (alliance.isPresent()) {
+      if (alliance.get() == DriverStation.Alliance.Blue) {
+        return new Pose2d(new Translation2d(0.6096, 7.5692), Rotation2d.kZero);
+      } else if (alliance.get() == DriverStation.Alliance.Red) {
+        return new Pose2d(new Translation2d(15.9258, 0.4826), Rotation2d.k180deg);
+      }
+    }
+    return new Pose2d(new Translation2d(0.6096, 0.4826), Rotation2d.kZero);
+  }
+
+  public static Pose2d calculateRightCornerRobotPosition() {
+    Optional<DriverStation.Alliance> alliance = DriverStation.getAlliance();
+    if (alliance.isPresent()) {
+      if (alliance.get() == DriverStation.Alliance.Blue) {
+        return new Pose2d(new Translation2d(0.6096, 0.4826), Rotation2d.kZero);
+      } else if (alliance.get() == DriverStation.Alliance.Red) {
+        return new Pose2d(new Translation2d(15.9258, 7.5692), Rotation2d.k180deg);
+      }
+    }
+    return new Pose2d(new Translation2d(0.6096, 0.4826), Rotation2d.kZero);
+  }
+
+  public static Rotation2d calculatePigeonZero() {
+    Optional<DriverStation.Alliance> alliance = DriverStation.getAlliance();
+    if (alliance.isPresent()) {
+      if (alliance.get() == DriverStation.Alliance.Blue) {
+        return Rotation2d.kZero;
+      } else if (alliance.get() == DriverStation.Alliance.Red) {
+        return Rotation2d.k180deg;
+      }
+    }
+    return Rotation2d.kZero;
   }
 
   public static Rotation2d getRotationTowardsHub(Translation2d hubpose, Translation2d currentpose) {
