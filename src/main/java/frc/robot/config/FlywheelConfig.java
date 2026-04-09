@@ -33,6 +33,7 @@ public class FlywheelConfig {
   public static final double FLYWHEEL_HUB_SHOT_SPEED = 43;
   public static final double FLYWHEEL_TOWER_SHOT_SPEED = 65;
   public static final double FLYWHEEL_TRENCH_SHOT_SPEED = 67;
+  public static final double FLYWHEEL_PASS_SPEED = 0;
 
   public static final double FLYWHEEL_OUTTAKE_SPEED = 0;
   public static final double FLYWHEEL_DEFAULT_SHOT_SPEED = 40;
