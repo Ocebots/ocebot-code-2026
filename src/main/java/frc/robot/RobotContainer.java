@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.swerve.SwerveDrivetrain;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.FollowPathCommand;
@@ -18,6 +19,7 @@ import frc.robot.commands.*;
 import frc.robot.config.HopperConfig;
 import frc.robot.config.IntakeConfig;
 import frc.robot.config.TunerConstants;
+import frc.robot.helpers.ShotCalculator;
 import frc.robot.subsystems.*;
 
 @Logged
@@ -28,8 +30,10 @@ public class RobotContainer {
   private Intake intake = new Intake();
   private Kicker kicker = new Kicker();
   private CommandXboxController controller = new CommandXboxController(1);
+  private CommandXboxController operator = new CommandXboxController(2);
   private final SendableChooser<Command> autoChooser;
   public static boolean isExtended = false;
+  private SwerveDrivetrain.SwerveDriveState driveState = drivetrain.getState();
 
   private Command shootGroup =
       Commands.parallel(new KickerCommand(kicker, KickerCommand.Position.INTAKE))
@@ -186,7 +190,7 @@ public class RobotContainer {
                 .withDeadline(Commands.waitSeconds(2))
                 .andThen(Commands.runOnce(() -> isExtended = !isExtended)));
     // Back button = Zero Pigeon
-    controller.back().onTrue(Commands.runOnce(drivetrain::seedFieldCentric));
+    controller.back().onTrue(Commands.runOnce(drivetrain::zeroPigeon));
     // Right Bumper = Flywheel Toggle for hub shot speeds
     controller
         .rightBumper()
@@ -203,19 +207,18 @@ public class RobotContainer {
             new FlywheelCommand(flywheel, FlywheelCommand.Position.CALCULATED_SHOT, drivetrain));
     // Down Plus = Zero hopper
     controller.povDown().onTrue(Commands.runOnce(() -> hopper.zero(), hopper));
-    // B = Shoot on the move toggle - placeholder button
-    controller
-        .b()
-        .toggleOnTrue(
-            Commands.parallel(
-                new DrivetrainCommand(
-                    drivetrain,
-                    DrivetrainCommand.Position.SOTM,
-                    controller::getLeftX,
-                    controller::getLeftY,
-                    controller::getRightX),
-                new FlywheelCommand(
-                    flywheel, FlywheelCommand.Position.CALCULATED_SHOT, drivetrain)));
+
+    /* Operator */
+    operator
+        .leftBumper()
+        .onTrue(
+            Commands.runOnce(
+                () -> drivetrain.setPose(ShotCalculator.calculateLeftCornerRobotPosition())));
+    operator
+        .rightBumper()
+        .onTrue(
+            Commands.runOnce(
+                () -> drivetrain.setPose(ShotCalculator.calculateRightCornerRobotPosition())));
   }
 
   public Command getAutonomousCommand() {
