@@ -29,10 +29,9 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.config.TunerConstants.TunerSwerveDrivetrain;
 import frc.robot.config.VisionConfig;
+import frc.robot.helpers.ShotCalculator;
 import java.util.Optional;
 import java.util.function.Supplier;
-
-import frc.robot.helpers.ShotCalculator;
 import org.photonvision.PhotonPoseEstimator;
 
 /**
@@ -303,58 +302,58 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
               });
     }
     // 1. Get all results since the last loop and apply if estimator is available
-//    if (m_FrontPhotonPoseEstimator != null) {
-//      var frontResults = Vision.FrontCameraApril.getAllUnreadResults();
-//
-//      for (var result : frontResults) {
-//        // 2. Use the 2026 explicit methods to calculate pose
-//        var visionEst = m_FrontPhotonPoseEstimator.estimateCoprocMultiTagPose(result);
-//
-//        // Fallback to single tag if multi-tag isn't available
-//        if (visionEst.isEmpty()) {
-//          var bestTarget = result.getBestTarget();
-//          if (bestTarget != null && bestTarget.getPoseAmbiguity() < 0.2) {
-//            visionEst = m_FrontPhotonPoseEstimator.estimateLowestAmbiguityPose(result);
-//          }
-//        }
+    //    if (m_FrontPhotonPoseEstimator != null) {
+    //      var frontResults = Vision.FrontCameraApril.getAllUnreadResults();
+    //
+    //      for (var result : frontResults) {
+    //        // 2. Use the 2026 explicit methods to calculate pose
+    //        var visionEst = m_FrontPhotonPoseEstimator.estimateCoprocMultiTagPose(result);
+    //
+    //        // Fallback to single tag if multi-tag isn't available
+    //        if (visionEst.isEmpty()) {
+    //          var bestTarget = result.getBestTarget();
+    //          if (bestTarget != null && bestTarget.getPoseAmbiguity() < 0.2) {
+    //            visionEst = m_FrontPhotonPoseEstimator.estimateLowestAmbiguityPose(result);
+    //          }
+    //        }
 
-//        // 3. Apply the successful estimation to the CTRE odometry and log to file
-//        visionEst.ifPresent(
-//            est -> {
-//              Pose2d pose = est.estimatedPose.toPose2d();
-//              double ts = est.timestampSeconds;
-//              SignalLogger.writeStruct("Vision/Front/Pose", Pose2d.struct, pose);
-//              SignalLogger.writeDouble("Vision/Front/Timestamp", ts, "seconds");
-//              addVisionMeasurement(pose, ts, VisionConfig.FRONT_VISION_STDDEVS);
-//            });
-//      }
-//    }
-//    if (m_RearPhotonPoseEstimator != null) {
-//      var rearResults = Vision.RearCameraApril.getAllUnreadResults();
-//
-//      for (var result : rearResults) {
-//        // 2. Use the 2026 explicit methods to calculate pose
-//        var visionEst = m_RearPhotonPoseEstimator.estimateCoprocMultiTagPose(result);
-//
-//        // Fallback to single tag if multi-tag isn't available
-//        if (visionEst.isEmpty()) {
-//          var bestTarget = result.getBestTarget();
-//          if (bestTarget != null && bestTarget.getPoseAmbiguity() < 0.2) {
-//            visionEst = m_RearPhotonPoseEstimator.estimateLowestAmbiguityPose(result);
-//          }
-//        }
+    //        // 3. Apply the successful estimation to the CTRE odometry and log to file
+    //        visionEst.ifPresent(
+    //            est -> {
+    //              Pose2d pose = est.estimatedPose.toPose2d();
+    //              double ts = est.timestampSeconds;
+    //              SignalLogger.writeStruct("Vision/Front/Pose", Pose2d.struct, pose);
+    //              SignalLogger.writeDouble("Vision/Front/Timestamp", ts, "seconds");
+    //              addVisionMeasurement(pose, ts, VisionConfig.FRONT_VISION_STDDEVS);
+    //            });
+    //      }
+    //    }
+    //    if (m_RearPhotonPoseEstimator != null) {
+    //      var rearResults = Vision.RearCameraApril.getAllUnreadResults();
+    //
+    //      for (var result : rearResults) {
+    //        // 2. Use the 2026 explicit methods to calculate pose
+    //        var visionEst = m_RearPhotonPoseEstimator.estimateCoprocMultiTagPose(result);
+    //
+    //        // Fallback to single tag if multi-tag isn't available
+    //        if (visionEst.isEmpty()) {
+    //          var bestTarget = result.getBestTarget();
+    //          if (bestTarget != null && bestTarget.getPoseAmbiguity() < 0.2) {
+    //            visionEst = m_RearPhotonPoseEstimator.estimateLowestAmbiguityPose(result);
+    //          }
+    //        }
 
-//        // 3. Apply the successful estimation to the CTRE odometry and log to file
-//        visionEst.ifPresent(
-//            est -> {
-//              Pose2d pose = est.estimatedPose.toPose2d();
-//              double ts = est.timestampSeconds;
-//              SignalLogger.writeStruct("Vision/Rear/Pose", Pose2d.struct, pose);
-//              SignalLogger.writeDouble("Vision/Rear/Timestamp", ts, "seconds");
-//              addVisionMeasurement(pose, ts, VisionConfig.REAR_VISION_STDDEVS);
-//            });
-      //}
-    //}
+    //        // 3. Apply the successful estimation to the CTRE odometry and log to file
+    //        visionEst.ifPresent(
+    //            est -> {
+    //              Pose2d pose = est.estimatedPose.toPose2d();
+    //              double ts = est.timestampSeconds;
+    //              SignalLogger.writeStruct("Vision/Rear/Pose", Pose2d.struct, pose);
+    //              SignalLogger.writeDouble("Vision/Rear/Timestamp", ts, "seconds");
+    //              addVisionMeasurement(pose, ts, VisionConfig.REAR_VISION_STDDEVS);
+    //            });
+    // }
+    // }
   }
 
   private void startSimThread() {
