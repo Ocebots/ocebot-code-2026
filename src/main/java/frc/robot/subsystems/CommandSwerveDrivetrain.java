@@ -11,6 +11,8 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -26,8 +28,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.config.TunerConstants.TunerSwerveDrivetrain;
+import frc.robot.config.VisionConfig;
 import java.util.Optional;
 import java.util.function.Supplier;
+import org.photonvision.PhotonPoseEstimator;
 
 /**
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements Subsystem so it can easily
@@ -38,6 +42,8 @@ import java.util.function.Supplier;
  */
 @Logged
 public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Subsystem {
+  private PhotonPoseEstimator m_FrontPhotonPoseEstimator;
+  private PhotonPoseEstimator m_RearPhotonPoseEstimator;
   private static final double kSimLoopPeriod = 0.004; // 4 ms
   private Notifier m_simNotifier = null;
   private double m_lastSimTime;
@@ -129,6 +135,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
       startSimThread();
     }
     configureAutoBuilder();
+    initVisionPoseEstimator();
   }
 
   /**
@@ -151,6 +158,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
       startSimThread();
     }
     configureAutoBuilder();
+    initVisionPoseEstimator();
   }
 
   /**
@@ -180,6 +188,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         odometryStandardDeviation,
         visionStandardDeviation,
         modules);
+    initVisionPoseEstimator();
     if (Utils.isSimulation()) {
       startSimThread();
     }
@@ -213,6 +222,29 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     } catch (Exception ex) {
       DriverStation.reportError(
           "Failed to load PathPlanner config and configure AutoBuilder", ex.getStackTrace());
+    }
+  }
+
+  private void initVisionPoseEstimator() {
+    try {
+      AprilTagFieldLayout fieldLayout =
+          AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark);
+      this.m_FrontPhotonPoseEstimator =
+          new PhotonPoseEstimator(fieldLayout, VisionConfig.FORWARD_CAMERA_POSITION);
+    } catch (Exception e) {
+      DriverStation.reportError(
+          "Failed to create front PhotonPoseEstimator: " + e.getMessage(), true);
+      this.m_FrontPhotonPoseEstimator = null;
+    }
+    try {
+      AprilTagFieldLayout fieldLayout =
+          AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark);
+      this.m_RearPhotonPoseEstimator =
+          new PhotonPoseEstimator(fieldLayout, VisionConfig.REAR_CAMERA_POSITION);
+    } catch (Exception e) {
+      DriverStation.reportError(
+          "Failed to create rear PhotonPoseEstimator: " + e.getMessage(), true);
+      this.m_RearPhotonPoseEstimator = null;
     }
   }
 
@@ -267,6 +299,59 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                         : kBlueAlliancePerspectiveRotation);
                 m_hasAppliedOperatorPerspective = true;
               });
+    }
+    // 1. Get all results since the last loop and apply if estimator is available
+    if (m_FrontPhotonPoseEstimator != null) {
+      var frontResults = Vision.FrontCameraApril.getAllUnreadResults();
+
+      for (var result : frontResults) {
+        // 2. Use the 2026 explicit methods to calculate pose
+        var visionEst = m_FrontPhotonPoseEstimator.estimateCoprocMultiTagPose(result);
+
+        // Fallback to single tag if multi-tag isn't available
+        if (visionEst.isEmpty()) {
+          var bestTarget = result.getBestTarget();
+          if (bestTarget != null && bestTarget.getPoseAmbiguity() < 0.2) {
+            visionEst = m_FrontPhotonPoseEstimator.estimateLowestAmbiguityPose(result);
+          }
+        }
+
+        // 3. Apply the successful estimation to the CTRE odometry and log to file
+        visionEst.ifPresent(
+            est -> {
+              Pose2d pose = est.estimatedPose.toPose2d();
+              double ts = est.timestampSeconds;
+              SignalLogger.writeStruct("Vision/Front/Pose", Pose2d.struct, pose);
+              SignalLogger.writeDouble("Vision/Front/Timestamp", ts, "seconds");
+              addVisionMeasurement(pose, ts, VisionConfig.FRONT_VISION_STDDEVS);
+            });
+      }
+    }
+    if (m_RearPhotonPoseEstimator != null) {
+      var rearResults = Vision.RearCameraApril.getAllUnreadResults();
+
+      for (var result : rearResults) {
+        // 2. Use the 2026 explicit methods to calculate pose
+        var visionEst = m_RearPhotonPoseEstimator.estimateCoprocMultiTagPose(result);
+
+        // Fallback to single tag if multi-tag isn't available
+        if (visionEst.isEmpty()) {
+          var bestTarget = result.getBestTarget();
+          if (bestTarget != null && bestTarget.getPoseAmbiguity() < 0.2) {
+            visionEst = m_RearPhotonPoseEstimator.estimateLowestAmbiguityPose(result);
+          }
+        }
+
+        // 3. Apply the successful estimation to the CTRE odometry and log to file
+        visionEst.ifPresent(
+            est -> {
+              Pose2d pose = est.estimatedPose.toPose2d();
+              double ts = est.timestampSeconds;
+              SignalLogger.writeStruct("Vision/Rear/Pose", Pose2d.struct, pose);
+              SignalLogger.writeDouble("Vision/Rear/Timestamp", ts, "seconds");
+              addVisionMeasurement(pose, ts, VisionConfig.REAR_VISION_STDDEVS);
+            });
+      }
     }
   }
 

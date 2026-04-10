@@ -1,21 +1,29 @@
 package frc.robot.helpers;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.config.FlywheelConfig;
 import java.util.Optional;
+import org.apache.commons.math3.stat.*;
+import org.apache.commons.math3.stat.regression.SimpleRegression;
 
 public class ShotCalculator {
   /* Calculation Methods */
+  // Calculate variable shot
   public static double calculateFlywheelShot(Translation2d robotPosition) {
     // 1. Calculate distance between goal and robot position
-    double distanceToGoal = calculateGoalPosition().getDistance(robotPosition);
-    // 2. Retrieve correlating RPS from map
+    double distanceToGoal = calculateHubPosition().getDistance(robotPosition);
+    // 2. Retrieve correlating RPS from map based off of distance
+    if (distanceToGoal > Units.inchesToMeters(87) || distanceToGoal < Units.inchesToMeters(43)) {
+      return getRPM(distanceToGoal);
+    }
     return DISTANCE_TO_FLYWHEEL.get(distanceToGoal);
   }
 
+  // Determine if flywheel should be running before active period and run at mid level speed
   public static double calculateFlywheelDefaultShot(Translation2d robotPosition) {
     // 1. Determine if within shooter run period (five seconds before or during active period)
     if (shouldRunShooter(5)) {
@@ -27,7 +35,7 @@ public class ShotCalculator {
   }
 
   /* Helper Methods */
-  public static Translation2d calculateGoalPosition() {
+  public static Translation2d calculateHubPosition() {
     Optional<DriverStation.Alliance> alliance = DriverStation.getAlliance();
     if (alliance.isPresent()) {
       if (alliance.get() == DriverStation.Alliance.Blue) {
@@ -37,7 +45,16 @@ public class ShotCalculator {
             Units.inchesToMeters(651.22 - 182.11), Units.inchesToMeters(158.84));
       }
     }
-    return null;
+    return new Translation2d(Units.inchesToMeters(182.11), Units.inchesToMeters(158.84));
+  }
+
+  public static Rotation2d getRotationTowardsHub(Translation2d hubpose, Translation2d currentpose) {
+    double deltaX = hubpose.getX() - currentpose.getX();
+    double deltaY = hubpose.getY() - currentpose.getY();
+
+    double angleRadians = Math.atan2(deltaY, deltaX);
+
+    return new Rotation2d(angleRadians);
   }
 
   // Determines active based on current match time
@@ -134,8 +151,26 @@ public class ShotCalculator {
     DISTANCE_TO_FLYWHEEL.put(Units.inchesToMeters(141), 70.0);
     DISTANCE_TO_FLYWHEEL.put(Units.inchesToMeters(90), 60.0);
     DISTANCE_TO_FLYWHEEL.put(Units.inchesToMeters(61), 50.0);
-    DISTANCE_TO_FLYWHEEL.put(Units.inchesToMeters(43), 40.0);
+    DISTANCE_TO_FLYWHEEL.put(Units.inchesToMeters(43), 47.0);
     DISTANCE_TO_FLYWHEEL.put(Units.inchesToMeters(74), 50.0);
     DISTANCE_TO_FLYWHEEL.put(Units.inchesToMeters(134), 65.0);
+  }
+
+  // Distance (m) -> Speed (RPS)
+  private static final SimpleRegression regression = new SimpleRegression();
+
+  // Set inputs
+  static {
+    regression.addData(Units.inchesToMeters(174), 87.0);
+    regression.addData(Units.inchesToMeters(141), 70.0);
+    regression.addData(Units.inchesToMeters(90), 60.0);
+    regression.addData(Units.inchesToMeters(61), 50.0);
+    regression.addData(Units.inchesToMeters(43), 47.0);
+    regression.addData(Units.inchesToMeters(74), 50.0);
+    regression.addData(Units.inchesToMeters(134), 65.0);
+  }
+
+  public static double getRPM(double distance) {
+    return regression.getSlope() * distance + regression.getIntercept();
   }
 }

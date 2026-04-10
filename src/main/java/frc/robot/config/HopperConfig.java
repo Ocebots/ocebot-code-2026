@@ -8,21 +8,21 @@ public class HopperConfig {
   // Set
   public static final double HOPPER_MAX_CRUISE_VELOCITY = 500;
   public static final double HOPPER_TARGET_ACCELERATION = 500;
-  public static final double HOPPER_P = 1.25;
+  public static final double HOPPER_P = 1;
   public static final double HOPPER_I = 0;
   public static final double HOPPER_D = 0;
   public static final double HOPPER_S = 0;
   public static final double HOPPER_V = 0;
   public static final double HOPPER_A = 0;
 
-  public static final double SLOW_HOPPER_P = 1.25;
+  public static final double SLOW_HOPPER_P = 0.5;
   public static final double SLOW_HOPPER_I = 0;
   public static final double SLOW_HOPPER_D = 0;
 
   public static final double HOPPER_TOLERANCE = 0.2;
 
   // Set
-  public static final double HOPPER_EXTEND_ROTATION = 4.1;
-  public static final double HOPPER_RETRACT_ROTATION = 0.1;
+  public static final double HOPPER_EXTEND_ROTATION = -17;
+  public static final double HOPPER_RETRACT_ROTATION = -0.1;
   public static final double HOPPER_RETRACT_FOR_NEUTRAL_MODE_ROTATION = 1.752;
 }

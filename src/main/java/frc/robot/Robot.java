@@ -4,34 +4,36 @@
 
 package frc.robot;
 
-import static frc.robot.RobotContainer.shooterState;
-import static frc.robot.config.VisionConfig.photonPoseEstimatorForward;
-import static frc.robot.config.VisionConfig.result;
-
 import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.commands.DrivetrainCommand;
 import frc.robot.commands.FlywheelCommand;
-import frc.robot.config.TunerConstants;
-import frc.robot.config.VisionConfig;
+import frc.robot.commands.KickerCommand;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
-import java.util.Optional;
-import org.photonvision.EstimatedRobotPose;
+import frc.robot.subsystems.Hopper;
+import frc.robot.subsystems.Intake;
 
 @Logged
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
-  private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
-
+  private Pose2d robotPose = new Pose2d();
   private final RobotContainer m_robotContainer;
+  private final CommandSwerveDrivetrain drivetrain;
+  StructPublisher<Pose2d> publisher =
+      NetworkTableInstance.getDefault().getStructTopic("Robot Pose", Pose2d.struct).publish();
 
   public Robot() {
     m_robotContainer = new RobotContainer();
+    drivetrain = m_robotContainer.getDrivetrain();
     Epilogue.bind(this);
     DataLogManager.start();
     DriverStation.startDataLog(DataLogManager.getLog());
@@ -40,21 +42,17 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
-    Optional<EstimatedRobotPose> visionEst =
-        VisionConfig.photonPoseEstimatorForward.estimateCoprocMultiTagPose(result);
-    if (visionEst.isEmpty()) {
-      visionEst = VisionConfig.photonPoseEstimatorForward.estimateLowestAmbiguityPose(result);
-    } else {
-      drivetrain.addVisionMeasurement(
-          photonPoseEstimatorForward
-              .estimateAverageBestTargetsPose(result)
-              .get()
-              .estimatedPose
-              .toPose2d(),
-          visionEst.get().timestampSeconds);
-    }
-    SmartDashboard.putString("shoot-state", shooterState);
-    SmartDashboard.putString("shoot-on", FlywheelCommand.isOn);
+    SmartDashboard.putString("Flywheel State", FlywheelCommand.flywheelState);
+    SmartDashboard.putString("Drivetrain State", DrivetrainCommand.drivetrainState);
+    SmartDashboard.putString("Hopper State", Hopper.hopperState);
+    SmartDashboard.putString("Intake State", Intake.intakeState);
+    SmartDashboard.putString("Kicker State", KickerCommand.kickerState);
+    SmartDashboard.putBoolean(
+        "Flywheel On",
+        !(FlywheelCommand.flywheelState.equals("none")
+            || FlywheelCommand.flywheelState.equals("Stopped")));
+    robotPose = drivetrain.getState().Pose;
+    publisher.set(robotPose);
   }
 
   @Override

@@ -8,8 +8,6 @@ public class CANMappings {
 
   public static final int INTAKE_MOTOR_ID = 3;
 
-  public static final int CLIMB_MOTOR_ID = 22; // unset
-
   public static final int FLYWHEEL_RIGHT_MOTOR_ID = 19;
   public static final int FLYWHEEL_LEFT_MOTOR_ID = 2;
 
