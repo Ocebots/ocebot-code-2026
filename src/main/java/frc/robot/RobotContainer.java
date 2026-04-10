@@ -219,7 +219,14 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return autoChooser.getSelected();
+    return 
+    new FlywheelCommand(flywheel, FlywheelCommand.Position.HUB_SHOT, drivetrain)
+            .withDeadline(Commands.waitSeconds(3)).andThen(
+        Commands.parallel(
+                new KickerCommand(kicker, KickerCommand.Position.INTAKE),
+                new IntakeCommand(intake, IntakeCommand.Position.SLOW_INTAKE),
+                new FlywheelCommand(flywheel, FlywheelCommand.Position.HUB_SHOT, drivetrain))
+            .withDeadline(Commands.waitSeconds(8)));
   }
 
   public CommandSwerveDrivetrain getDrivetrain() {
