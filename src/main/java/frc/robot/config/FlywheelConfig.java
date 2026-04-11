@@ -1,12 +1,12 @@
 package frc.robot.config;
 
 public class FlywheelConfig {
-  public static final double FLYWHEEL_RIGHT_SUPPLY_CURRENT_LIMIT = 50;
-  public static final double FLYWHEEL_RIGHT_STATOR_CURRENT_LIMIT = 60;
+  public static final double FLYWHEEL_RIGHT_SUPPLY_CURRENT_LIMIT = 35;
+  public static final double FLYWHEEL_RIGHT_STATOR_CURRENT_LIMIT = 45;
   public static final double FLYWHEEL_RIGHT_GEAR_RATIO = 1;
 
-  public static final double FLYWHEEL_LEFT_SUPPLY_CURRENT_LIMIT = 50;
-  public static final double FLYWHEEL_LEFT_STATOR_CURRENT_LIMIT = 60;
+  public static final double FLYWHEEL_LEFT_SUPPLY_CURRENT_LIMIT = 35;
+  public static final double FLYWHEEL_LEFT_STATOR_CURRENT_LIMIT = 45;
   public static final double FLYWHEEL_LEFT_GEAR_RATIO = 1;
 
   // Set
@@ -32,7 +32,7 @@ public class FlywheelConfig {
   // Set
   public static final double FLYWHEEL_HUB_SHOT_SPEED = 30;
   public static final double FLYWHEEL_TOWER_SHOT_SPEED = 20;
-  public static final double FLYWHEEL_TRENCH_SHOT_SPEED = 20;
+  public static final double FLYWHEEL_TRENCH_SHOT_SPEED = 25;
   public static final double FLYWHEEL_PASS_SPEED = 0;
 
   public static final double FLYWHEEL_OUTTAKE_SPEED = 0;
