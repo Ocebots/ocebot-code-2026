@@ -73,6 +73,23 @@ public class ShotCalculator {
     return new Pose2d(new Translation2d(0.6096, 0.4826), Rotation2d.kZero);
   }
 
+  public static Pose2d calculateHubRobotPosition() {
+    Optional<DriverStation.Alliance> alliance = DriverStation.getAlliance();
+    if (alliance.isPresent()) {
+      if (alliance.get() == DriverStation.Alliance.Blue) {
+        return new Pose2d(
+            new Translation2d(Units.inchesToMeters(189.36), (0.4826 + 7.5692) / 2),
+            Rotation2d.kZero);
+      } else if (alliance.get() == DriverStation.Alliance.Red) {
+        return new Pose2d(
+            new Translation2d(Units.inchesToMeters(461.84), (0.4826 + 7.5692) / 2),
+            Rotation2d.k180deg);
+      }
+    }
+    return new Pose2d(
+        new Translation2d(Units.inchesToMeters(189.36), (0.4826 + 7.5692) / 2), Rotation2d.kZero);
+  }
+
   public static Rotation2d calculatePigeonZero() {
     Optional<DriverStation.Alliance> alliance = DriverStation.getAlliance();
     if (alliance.isPresent()) {

@@ -191,10 +191,10 @@ public class RobotContainer {
                 .andThen(Commands.runOnce(() -> isExtended = !isExtended)));
     // Back button = Zero Pigeon
     controller.back().onTrue(Commands.runOnce(drivetrain::zeroPigeon));
-    // Right Bumper = Flywheel Toggle for hub shot speeds
+    // Right Bumper = Flywheel Toggle for pass
     controller
         .rightBumper()
-        .toggleOnTrue(new FlywheelCommand(flywheel, FlywheelCommand.Position.HUB_SHOT, drivetrain));
+        .toggleOnTrue(new FlywheelCommand(flywheel, FlywheelCommand.Position.PASS, drivetrain));
     // Left Bumper = Flywheel Toggle for trench shot speeds
     controller
         .leftBumper()
@@ -216,6 +216,11 @@ public class RobotContainer {
                 () -> drivetrain.setPose(ShotCalculator.calculateLeftCornerRobotPosition())));
     operator
         .rightBumper()
+        .onTrue(
+            Commands.runOnce(
+                () -> drivetrain.setPose(ShotCalculator.calculateRightCornerRobotPosition())));
+    operator
+        .y()
         .onTrue(
             Commands.runOnce(
                 () -> drivetrain.setPose(ShotCalculator.calculateRightCornerRobotPosition())));
