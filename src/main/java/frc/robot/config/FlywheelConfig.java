@@ -15,7 +15,7 @@ public class FlywheelConfig {
   public static final double FLYWHEEL_RIGHT_P = 0.25;
   public static final double FLYWHEEL_RIGHT_I = 0;
   public static final double FLYWHEEL_RIGHT_D = 0;
-  public static final double FLYWHEEL_RIGHT_S = 0.3;
+  public static final double FLYWHEEL_RIGHT_S = 0.4;
   public static final double FLYWHEEL_RIGHT_V = 0.123;
   public static final double FLYWHEEL_RIGHT_A = 0;
 
@@ -25,17 +25,18 @@ public class FlywheelConfig {
   public static final double FLYWHEEL_LEFT_P = 0.25;
   public static final double FLYWHEEL_LEFT_I = 0;
   public static final double FLYWHEEL_LEFT_D = 0;
-  public static final double FLYWHEEL_LEFT_S = 0.3;
+  public static final double FLYWHEEL_LEFT_S = 0.4;
   public static final double FLYWHEEL_LEFT_V = 0.123;
   public static final double FLYWHEEL_LEFT_A = 0;
 
   // Set
   public static final double FLYWHEEL_HUB_SHOT_SPEED = 30;
   public static final double FLYWHEEL_TOWER_SHOT_SPEED = 20;
-  public static final double FLYWHEEL_TRENCH_SHOT_SPEED = 25;
-  public static final double FLYWHEEL_PASS_SPEED = 50;
+  public static final double FLYWHEEL_TRENCH_SHOT_SPEED = 30;
+  public static final double FLYWHEEL_PASS_SPEED = 60;
 
   public static final double FLYWHEEL_OUTTAKE_SPEED = 0;
   public static final double FLYWHEEL_DEFAULT_SHOT_SPEED = 40;
   public static final double FLYWHEEL_TOLERANCE = 5;
+  public static final double FLYWHEEL_DEPOT_SHOT_SPEED = 37;
 }

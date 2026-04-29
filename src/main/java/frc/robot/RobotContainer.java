@@ -96,8 +96,8 @@ public class RobotContainer {
 
     NamedCommands.registerCommand(
         "rev shooter",
-        new FlywheelCommand(flywheel, FlywheelCommand.Position.TRENCH_SHOT, drivetrain)
-            .withDeadline(Commands.waitSeconds(1)));
+        new FlywheelCommand(flywheel, FlywheelCommand.Position.DEPOT_SHOT, drivetrain)
+            .withDeadline(Commands.waitSeconds(3)));
 
     NamedCommands.registerCommand(
         "shoot long",
@@ -105,7 +105,15 @@ public class RobotContainer {
                 new KickerCommand(kicker, KickerCommand.Position.INTAKE),
                 new IntakeCommand(intake, IntakeCommand.Position.SLOW_INTAKE),
                 new FlywheelCommand(flywheel, FlywheelCommand.Position.TRENCH_SHOT, drivetrain))
-            .withDeadline(Commands.waitSeconds(8)));
+            .withDeadline(Commands.waitSeconds(5)));
+
+    NamedCommands.registerCommand(
+        "shoot depot",
+        Commands.parallel(
+                new KickerCommand(kicker, KickerCommand.Position.INTAKE),
+                new IntakeCommand(intake, IntakeCommand.Position.SLOW_INTAKE),
+                new FlywheelCommand(flywheel, FlywheelCommand.Position.DEPOT_SHOT, drivetrain))
+            .withDeadline(Commands.waitSeconds(5)));
 
     NamedCommands.registerCommand(
         "short shoot",
@@ -180,15 +188,13 @@ public class RobotContainer {
         .povRight()
         .and(() -> !shootGroup.isScheduled())
         .toggleOnTrue(new IntakeCommand(intake, IntakeCommand.Position.OUTTAKE));
-    // Right Stick Down = Extend/Retract Hopper
+    // Right Stick Down = Retract Hopper
     controller
         .rightStick()
         .and(() -> !shootGroup.isScheduled())
         .onTrue(
-            Commands.runEnd(
-                    () -> hopper.move(Hopper.getRotation(isExtended)), () -> hopper.stop(), hopper)
-                .withDeadline(Commands.waitSeconds(2))
-                .andThen(Commands.runOnce(() -> isExtended = !isExtended)));
+            Commands.run(() -> hopper.move(HopperConfig.HOPPER_RETRACT_ROTATION), hopper)
+                .withDeadline(Commands.waitSeconds(2)));
     // Back button = Zero Pigeon
     controller.back().onTrue(Commands.runOnce(drivetrain::zeroPigeon));
     // Right Bumper = Flywheel Toggle for pass
@@ -207,7 +213,20 @@ public class RobotContainer {
             new FlywheelCommand(flywheel, FlywheelCommand.Position.CALCULATED_SHOT, drivetrain));
     // Down Plus = Zero hopper
     controller.povDown().onTrue(Commands.runOnce(() -> hopper.zero(), hopper));
-
+    // Intake Extend Shoot
+    controller
+        .b()
+        .toggleOnTrue(
+            Commands.parallel(
+                new KickerCommand(kicker, KickerCommand.Position.INTAKE),
+                new IntakeCommand(intake, IntakeCommand.Position.SLOW_INTAKE),
+                Commands.run(() -> hopper.move(HopperConfig.HOPPER_EXTEND_ROTATION))));
+    // Hopper Extend
+    controller
+        .a()
+        .onTrue(
+            Commands.run(() -> hopper.move(HopperConfig.HOPPER_EXTEND_ROTATION), hopper)
+                .withDeadline(Commands.waitSeconds(2)));
     /* Operator */
     operator
         .leftBumper()
@@ -222,8 +241,7 @@ public class RobotContainer {
     operator
         .y()
         .onTrue(
-            Commands.runOnce(
-                () -> drivetrain.setPose(ShotCalculator.calculateRightCornerRobotPosition())));
+            Commands.runOnce(() -> drivetrain.setPose(ShotCalculator.calculateHubRobotPosition())));
   }
 
   public Command getAutonomousCommand() {

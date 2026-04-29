@@ -16,8 +16,8 @@ public class KickerConfig {
   public static final double KICKER_V = 0;
   public static final double KICKER_A = 0;
 
-  public static final double KICKER_INTAKE_SPEED = 11;
-  public static final double KICKER_OUTTAKE_SPEED = 11;
+  public static final double KICKER_INTAKE_SPEED = 6;
+  public static final double KICKER_OUTTAKE_SPEED = 6;
 
   public static final double KICKER_RIGHT_INTAKE_SPEED = 0;
   public static final double KICKER_RIGHT_OUTTAKE_SPEED = 0;

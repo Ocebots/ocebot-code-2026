@@ -53,24 +53,24 @@ public class ShotCalculator {
     Optional<DriverStation.Alliance> alliance = DriverStation.getAlliance();
     if (alliance.isPresent()) {
       if (alliance.get() == DriverStation.Alliance.Blue) {
-        return new Pose2d(new Translation2d(0.6096, 7.5692), Rotation2d.kZero);
+        return new Pose2d(new Translation2d(0.6096, 7.5692), Rotation2d.k180deg);
       } else if (alliance.get() == DriverStation.Alliance.Red) {
-        return new Pose2d(new Translation2d(15.9258, 0.4826), Rotation2d.k180deg);
+        return new Pose2d(new Translation2d(15.9258, 0.4826), Rotation2d.kZero);
       }
     }
-    return new Pose2d(new Translation2d(0.6096, 0.4826), Rotation2d.kZero);
+    return new Pose2d(new Translation2d(0.6096, 0.4826), Rotation2d.k180deg);
   }
 
   public static Pose2d calculateRightCornerRobotPosition() {
     Optional<DriverStation.Alliance> alliance = DriverStation.getAlliance();
     if (alliance.isPresent()) {
       if (alliance.get() == DriverStation.Alliance.Blue) {
-        return new Pose2d(new Translation2d(0.6096, 0.4826), Rotation2d.kZero);
+        return new Pose2d(new Translation2d(0.6096, 0.4826), Rotation2d.k180deg);
       } else if (alliance.get() == DriverStation.Alliance.Red) {
-        return new Pose2d(new Translation2d(15.9258, 7.5692), Rotation2d.k180deg);
+        return new Pose2d(new Translation2d(15.9258, 7.5692), Rotation2d.kZero);
       }
     }
-    return new Pose2d(new Translation2d(0.6096, 0.4826), Rotation2d.kZero);
+    return new Pose2d(new Translation2d(0.6096, 0.4826), Rotation2d.k180deg);
   }
 
   public static Pose2d calculateHubRobotPosition() {
@@ -79,15 +79,15 @@ public class ShotCalculator {
       if (alliance.get() == DriverStation.Alliance.Blue) {
         return new Pose2d(
             new Translation2d(Units.inchesToMeters(189.36), (0.4826 + 7.5692) / 2),
-            Rotation2d.kZero);
+            Rotation2d.k180deg);
       } else if (alliance.get() == DriverStation.Alliance.Red) {
         return new Pose2d(
             new Translation2d(Units.inchesToMeters(461.84), (0.4826 + 7.5692) / 2),
-            Rotation2d.k180deg);
+            Rotation2d.kZero);
       }
     }
     return new Pose2d(
-        new Translation2d(Units.inchesToMeters(189.36), (0.4826 + 7.5692) / 2), Rotation2d.kZero);
+        new Translation2d(Units.inchesToMeters(189.36), (0.4826 + 7.5692) / 2), Rotation2d.k180deg);
   }
 
   public static Rotation2d calculatePigeonZero() {
@@ -108,7 +108,7 @@ public class ShotCalculator {
 
     double angleRadians = Math.atan2(deltaY, deltaX);
 
-    return new Rotation2d(angleRadians);
+    return new Rotation2d(angleRadians + Math.PI);
   }
 
   // Determines active based on current match time
