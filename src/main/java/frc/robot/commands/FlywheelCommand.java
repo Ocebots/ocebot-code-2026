@@ -13,9 +13,11 @@ public class FlywheelCommand extends Command {
     HUB_SHOT,
     TOWER_SHOT,
     TRENCH_SHOT,
+    DEPOT_SHOT,
     CALCULATED_SHOT,
     DEFAULT_SHOT,
-    OUTTAKE
+    OUTTAKE,
+    PASS
   }
 
   private Flywheel subsystem;
@@ -40,6 +42,11 @@ public class FlywheelCommand extends Command {
         flywheelState = "Hub Shot";
         break;
 
+      case PASS:
+        subsystem.shoot(FlywheelConfig.FLYWHEEL_PASS_SPEED);
+        flywheelState = "Pass";
+        break;
+
       // Spins flywheels at proper speed for shooting from tower
       case TOWER_SHOT:
         subsystem.shoot(FlywheelConfig.FLYWHEEL_TOWER_SHOT_SPEED);
@@ -48,6 +55,11 @@ public class FlywheelCommand extends Command {
 
       case TRENCH_SHOT:
         subsystem.shoot(FlywheelConfig.FLYWHEEL_TRENCH_SHOT_SPEED);
+        flywheelState = "Trench Shot";
+        break;
+
+      case DEPOT_SHOT:
+        subsystem.shoot(FlywheelConfig.FLYWHEEL_DEPOT_SHOT_SPEED);
         flywheelState = "Trench Shot";
         break;
 

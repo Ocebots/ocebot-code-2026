@@ -1,5 +1,6 @@
 package frc.robot.helpers;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
@@ -48,13 +49,66 @@ public class ShotCalculator {
     return new Translation2d(Units.inchesToMeters(182.11), Units.inchesToMeters(158.84));
   }
 
+  public static Pose2d calculateLeftCornerRobotPosition() {
+    Optional<DriverStation.Alliance> alliance = DriverStation.getAlliance();
+    if (alliance.isPresent()) {
+      if (alliance.get() == DriverStation.Alliance.Blue) {
+        return new Pose2d(new Translation2d(0.6096, 7.5692), Rotation2d.k180deg);
+      } else if (alliance.get() == DriverStation.Alliance.Red) {
+        return new Pose2d(new Translation2d(15.9258, 0.4826), Rotation2d.kZero);
+      }
+    }
+    return new Pose2d(new Translation2d(0.6096, 0.4826), Rotation2d.k180deg);
+  }
+
+  public static Pose2d calculateRightCornerRobotPosition() {
+    Optional<DriverStation.Alliance> alliance = DriverStation.getAlliance();
+    if (alliance.isPresent()) {
+      if (alliance.get() == DriverStation.Alliance.Blue) {
+        return new Pose2d(new Translation2d(0.6096, 0.4826), Rotation2d.k180deg);
+      } else if (alliance.get() == DriverStation.Alliance.Red) {
+        return new Pose2d(new Translation2d(15.9258, 7.5692), Rotation2d.kZero);
+      }
+    }
+    return new Pose2d(new Translation2d(0.6096, 0.4826), Rotation2d.k180deg);
+  }
+
+  public static Pose2d calculateHubRobotPosition() {
+    Optional<DriverStation.Alliance> alliance = DriverStation.getAlliance();
+    if (alliance.isPresent()) {
+      if (alliance.get() == DriverStation.Alliance.Blue) {
+        return new Pose2d(
+            new Translation2d(Units.inchesToMeters(189.36), (0.4826 + 7.5692) / 2),
+            Rotation2d.k180deg);
+      } else if (alliance.get() == DriverStation.Alliance.Red) {
+        return new Pose2d(
+            new Translation2d(Units.inchesToMeters(461.84), (0.4826 + 7.5692) / 2),
+            Rotation2d.kZero);
+      }
+    }
+    return new Pose2d(
+        new Translation2d(Units.inchesToMeters(189.36), (0.4826 + 7.5692) / 2), Rotation2d.k180deg);
+  }
+
+  public static Rotation2d calculatePigeonZero() {
+    Optional<DriverStation.Alliance> alliance = DriverStation.getAlliance();
+    if (alliance.isPresent()) {
+      if (alliance.get() == DriverStation.Alliance.Blue) {
+        return Rotation2d.kZero;
+      } else if (alliance.get() == DriverStation.Alliance.Red) {
+        return Rotation2d.k180deg;
+      }
+    }
+    return Rotation2d.kZero;
+  }
+
   public static Rotation2d getRotationTowardsHub(Translation2d hubpose, Translation2d currentpose) {
     double deltaX = hubpose.getX() - currentpose.getX();
     double deltaY = hubpose.getY() - currentpose.getY();
 
     double angleRadians = Math.atan2(deltaY, deltaX);
 
-    return new Rotation2d(angleRadians);
+    return new Rotation2d(angleRadians + Math.PI);
   }
 
   // Determines active based on current match time

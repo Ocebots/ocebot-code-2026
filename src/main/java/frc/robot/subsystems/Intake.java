@@ -13,11 +13,20 @@ import frc.robot.config.IntakeConfig;
 @Logged
 public class Intake extends SubsystemBase {
   protected TalonFX intake;
+  //  protected TalonFX swerveDrive;
+  //  protected TalonFX swerveSteer;
   public static String intakeState = "Stopped";
 
   public Intake() {
     intake = new TalonFX(CANMappings.INTAKE_MOTOR_ID);
     TalonFXConfiguration intakeConfig = new TalonFXConfiguration();
+
+    //    swerveDrive = new TalonFX(31);
+    //    swerveSteer = new TalonFX(30);
+    //    TalonFXConfiguration swerveConfig = new TalonFXConfiguration();
+    //    swerveConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    //    swerveDrive.getConfigurator().apply(swerveConfig);
+    //    swerveSteer.getConfigurator().apply(swerveConfig);
 
     intakeConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     intakeConfig.CurrentLimits.StatorCurrentLimitEnable = true;

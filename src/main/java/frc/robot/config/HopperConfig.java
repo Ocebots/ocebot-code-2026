@@ -22,7 +22,7 @@ public class HopperConfig {
   public static final double HOPPER_TOLERANCE = 0.2;
 
   // Set
-  public static final double HOPPER_EXTEND_ROTATION = -17;
+  public static final double HOPPER_EXTEND_ROTATION = -16.729;
   public static final double HOPPER_RETRACT_ROTATION = -0.1;
   public static final double HOPPER_RETRACT_FOR_NEUTRAL_MODE_ROTATION = 1.752;
 }

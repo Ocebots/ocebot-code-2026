@@ -1,8 +1,8 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -76,14 +76,14 @@ public class Flywheel extends SubsystemBase {
 
   public void shoot(double speed) {
     speed = Math.abs(speed);
-    flywheelRight.setControl(new MotionMagicVelocityVoltage(speed));
-    flywheelLeft.setControl(new MotionMagicVelocityVoltage(-speed));
+    flywheelRight.setControl(new MotionMagicVelocityVoltage(-speed));
+    flywheelLeft.setControl(new MotionMagicVelocityVoltage(speed));
   }
 
   public void outtake(double speed) {
     speed = Math.abs(speed);
-    flywheelRight.setControl(new DutyCycleOut(-speed));
-    flywheelLeft.setControl(new DutyCycleOut(speed));
+    flywheelRight.setControl(new VoltageOut(speed));
+    flywheelLeft.setControl(new VoltageOut(-speed));
   }
 
   public void stop() {

@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.swerve.SwerveDrivetrain;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.FollowPathCommand;
@@ -18,6 +19,7 @@ import frc.robot.commands.*;
 import frc.robot.config.HopperConfig;
 import frc.robot.config.IntakeConfig;
 import frc.robot.config.TunerConstants;
+import frc.robot.helpers.ShotCalculator;
 import frc.robot.subsystems.*;
 
 @Logged
@@ -28,8 +30,10 @@ public class RobotContainer {
   private Intake intake = new Intake();
   private Kicker kicker = new Kicker();
   private CommandXboxController controller = new CommandXboxController(1);
+  private CommandXboxController operator = new CommandXboxController(2);
   private final SendableChooser<Command> autoChooser;
   public static boolean isExtended = false;
+  private SwerveDrivetrain.SwerveDriveState driveState = drivetrain.getState();
 
   private Command shootGroup =
       Commands.parallel(new KickerCommand(kicker, KickerCommand.Position.INTAKE))
@@ -92,8 +96,8 @@ public class RobotContainer {
 
     NamedCommands.registerCommand(
         "rev shooter",
-        new FlywheelCommand(flywheel, FlywheelCommand.Position.TRENCH_SHOT, drivetrain)
-            .withDeadline(Commands.waitSeconds(1)));
+        new FlywheelCommand(flywheel, FlywheelCommand.Position.DEPOT_SHOT, drivetrain)
+            .withDeadline(Commands.waitSeconds(3)));
 
     NamedCommands.registerCommand(
         "shoot long",
@@ -101,7 +105,15 @@ public class RobotContainer {
                 new KickerCommand(kicker, KickerCommand.Position.INTAKE),
                 new IntakeCommand(intake, IntakeCommand.Position.SLOW_INTAKE),
                 new FlywheelCommand(flywheel, FlywheelCommand.Position.TRENCH_SHOT, drivetrain))
-            .withDeadline(Commands.waitSeconds(8)));
+            .withDeadline(Commands.waitSeconds(5)));
+
+    NamedCommands.registerCommand(
+        "shoot depot",
+        Commands.parallel(
+                new KickerCommand(kicker, KickerCommand.Position.INTAKE),
+                new IntakeCommand(intake, IntakeCommand.Position.SLOW_INTAKE),
+                new FlywheelCommand(flywheel, FlywheelCommand.Position.DEPOT_SHOT, drivetrain))
+            .withDeadline(Commands.waitSeconds(5)));
 
     NamedCommands.registerCommand(
         "short shoot",
@@ -176,21 +188,19 @@ public class RobotContainer {
         .povRight()
         .and(() -> !shootGroup.isScheduled())
         .toggleOnTrue(new IntakeCommand(intake, IntakeCommand.Position.OUTTAKE));
-    // Right Stick Down = Extend/Retract Hopper
+    // Right Stick Down = Retract Hopper
     controller
         .rightStick()
         .and(() -> !shootGroup.isScheduled())
         .onTrue(
-            Commands.runEnd(
-                    () -> hopper.move(Hopper.getRotation(isExtended)), () -> hopper.stop(), hopper)
-                .withDeadline(Commands.waitSeconds(2))
-                .andThen(Commands.runOnce(() -> isExtended = !isExtended)));
+            Commands.run(() -> hopper.move(HopperConfig.HOPPER_RETRACT_ROTATION), hopper)
+                .withDeadline(Commands.waitSeconds(2)));
     // Back button = Zero Pigeon
-    controller.back().onTrue(Commands.runOnce(drivetrain::seedFieldCentric));
-    // Right Bumper = Flywheel Toggle for hub shot speeds
+    controller.back().onTrue(Commands.runOnce(drivetrain::zeroPigeon));
+    // Right Bumper = Flywheel Toggle for pass
     controller
         .rightBumper()
-        .toggleOnTrue(new FlywheelCommand(flywheel, FlywheelCommand.Position.HUB_SHOT, drivetrain));
+        .toggleOnTrue(new FlywheelCommand(flywheel, FlywheelCommand.Position.PASS, drivetrain));
     // Left Bumper = Flywheel Toggle for trench shot speeds
     controller
         .leftBumper()
@@ -203,19 +213,35 @@ public class RobotContainer {
             new FlywheelCommand(flywheel, FlywheelCommand.Position.CALCULATED_SHOT, drivetrain));
     // Down Plus = Zero hopper
     controller.povDown().onTrue(Commands.runOnce(() -> hopper.zero(), hopper));
-    // B = Shoot on the move toggle - placeholder button
+    // Intake Extend Shoot
     controller
         .b()
         .toggleOnTrue(
             Commands.parallel(
-                new DrivetrainCommand(
-                    drivetrain,
-                    DrivetrainCommand.Position.SOTM,
-                    controller::getLeftX,
-                    controller::getLeftY,
-                    controller::getRightX),
-                new FlywheelCommand(
-                    flywheel, FlywheelCommand.Position.CALCULATED_SHOT, drivetrain)));
+                new KickerCommand(kicker, KickerCommand.Position.INTAKE),
+                new IntakeCommand(intake, IntakeCommand.Position.SLOW_INTAKE),
+                Commands.run(() -> hopper.move(HopperConfig.HOPPER_EXTEND_ROTATION))));
+    // Hopper Extend
+    controller
+        .a()
+        .onTrue(
+            Commands.run(() -> hopper.move(HopperConfig.HOPPER_EXTEND_ROTATION), hopper)
+                .withDeadline(Commands.waitSeconds(2)));
+    /* Operator */
+    operator
+        .leftBumper()
+        .onTrue(
+            Commands.runOnce(
+                () -> drivetrain.setPose(ShotCalculator.calculateLeftCornerRobotPosition())));
+    operator
+        .rightBumper()
+        .onTrue(
+            Commands.runOnce(
+                () -> drivetrain.setPose(ShotCalculator.calculateRightCornerRobotPosition())));
+    operator
+        .y()
+        .onTrue(
+            Commands.runOnce(() -> drivetrain.setPose(ShotCalculator.calculateHubRobotPosition())));
   }
 
   public Command getAutonomousCommand() {
